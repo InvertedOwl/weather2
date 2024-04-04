@@ -31,15 +31,21 @@ public class DeflectorBlockEntity extends BlockEntity {
 
     public void init() {
         if (!level.isClientSide()) {
-            CULog.dbg("adding weather deflector poi at " + getBlockPos());
             ServerTickHandler.getWeatherManagerFor(level).registerDeflector(getBlockPos());
+        }
+    }
+
+    public void blockBroken() {
+        WeatherManagerServer weatherManagerServer = ServerTickHandler.getWeatherManagerFor(level);
+        if (weatherManagerServer != null) {
+            //CULog.dbg("removing weather deflector poi at " + getBlockPos());
+            weatherManagerServer.removeDeflector(getBlockPos());
         }
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        WeatherManagerServer weatherManagerServer = ServerTickHandler.getWeatherManagerFor(level);
-        if (weatherManagerServer != null) weatherManagerServer.removeDeflector(getBlockPos());
+
     }
 }

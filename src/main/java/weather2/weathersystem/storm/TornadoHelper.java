@@ -1,11 +1,9 @@
 package weather2.weathersystem.storm;
 
-import com.corosus.coroutil.util.CULog;
 import com.corosus.coroutil.util.CoroUtilBlock;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -837,7 +835,7 @@ public class TornadoHelper {
 
 			isBlockGrabbingBlockedCached = false;
 
-			for (Long hash : storm.manager.getListWeatherBlockDamageDeflector().keySet()) {
+			for (Long hash : storm.manager.getLookupWeatherBlockDamageDeflector().keySet()) {
 				BlockPos posDeflect = BlockPos.of(hash);
 
 				if (pos.distSqr(posDeflect) < ConfigStorm.Storm_Deflector_RadiusOfStormRemoval * ConfigStorm.Storm_Deflector_RadiusOfStormRemoval) {

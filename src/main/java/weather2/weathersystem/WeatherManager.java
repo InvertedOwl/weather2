@@ -40,7 +40,7 @@ public abstract class WeatherManager implements IWorldData {
 	//going to vary the amount randomly over time like wind, for aesthetic only mode
 	public float vanillaRainAmountOnServer = 0;
 
-	private HashMap<Long, BlockPos> listWeatherBlockDamageDeflector = new HashMap<>();
+	private HashMap<Long, BlockPos> lookupWeatherBlockDamageDeflector = new HashMap<>();
 
 	public WeatherManager(ResourceKey<Level> dimension) {
 		this.dimension = dimension;
@@ -383,6 +383,14 @@ public abstract class WeatherManager implements IWorldData {
 			listStormsNBT.put("storm_" + obj.ID, obj.getNbtCache().getNewNBT());
 		}
 		data.put("stormData", listStormsNBT);
+		CompoundTag listDeflectorsNBT = new CompoundTag();
+		int i = 0;
+		for (Map.Entry<Long, BlockPos> entry : lookupWeatherBlockDamageDeflector.entrySet()) {
+			CULog.dbg("writing out deflector to disk: " + entry.getKey());
+			listDeflectorsNBT.putLong("deflector_" + i, entry.getKey());
+			i++;
+		}
+		data.put("deflectorData", listDeflectorsNBT);
 		data.putLong("lastUsedIDStorm", WeatherObject.lastUsedStormID);
 
 		data.putLong("lastStormFormed", lastStormFormed);
@@ -455,6 +463,21 @@ public abstract class WeatherManager implements IWorldData {
 			}*/
 		}
 
+		CompoundTag nbtDeflectors = data.getCompound("deflectorData");
+
+		Iterator it2 = nbtDeflectors.getAllKeys().iterator();
+
+		while (it2.hasNext()) {
+			String tagName = (String) it2.next();
+			long hash = nbtDeflectors.getLong(tagName);
+			if (!BlockPos.of(hash).equals(new BlockPos(0, 0, 0))) {
+				CULog.dbg("adding deflector from disk: " + BlockPos.of(hash));
+				registerDeflector(BlockPos.of(hash));
+			} else {
+				CULog.dbg("????????");
+			}
+		}
+
 		CULog.dbg("reloaded weather objects: " + listStormObjects.size());
 	}
 
@@ -462,20 +485,22 @@ public abstract class WeatherManager implements IWorldData {
 		return this.wind;
 	}
 
-	public HashMap<Long, BlockPos> getListWeatherBlockDamageDeflector() {
-		return listWeatherBlockDamageDeflector;
+	public HashMap<Long, BlockPos> getLookupWeatherBlockDamageDeflector() {
+		return lookupWeatherBlockDamageDeflector;
 	}
 
 	public void registerDeflector(BlockPos pos) {
 		long hash = BlockPos.asLong(pos.getX(), pos.getY(), pos.getZ());
-		if (!this.listWeatherBlockDamageDeflector.containsKey(hash)) {
-			this.listWeatherBlockDamageDeflector.put(hash, pos);
+		if (!this.lookupWeatherBlockDamageDeflector.containsKey(hash)) {
+			CULog.dbg("adding weather deflector poi at " + pos);
+			this.lookupWeatherBlockDamageDeflector.put(hash, pos);
 		}
 	}
 
 	public void removeDeflector(BlockPos pos) {
 		long hash = BlockPos.asLong(pos.getX(), pos.getY(), pos.getZ());
-		this.listWeatherBlockDamageDeflector.remove(hash);
+		CULog.dbg("removing weather deflector poi at " + pos);
+		this.lookupWeatherBlockDamageDeflector.remove(hash);
 	}
 
 }

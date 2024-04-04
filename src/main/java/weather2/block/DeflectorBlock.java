@@ -35,4 +35,13 @@ public class DeflectorBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> p_153214_) {
         return createTickerHelper(p_153214_, WeatherBlocks.BLOCK_ENTITY_DEFLECTOR.get(), DeflectorBlockEntity::tickHelper);
     }
+
+    @Override
+    public void onRemove(BlockState p_60515_, Level level, BlockPos pos, BlockState p_60518_, boolean p_60519_) {
+        System.out.println("removed deflector block");
+        if (level.getBlockEntity(pos) instanceof DeflectorBlockEntity deflectorBlockEntity) {
+            deflectorBlockEntity.blockBroken();
+        }
+        super.onRemove(p_60515_, level, pos, p_60518_, p_60519_);
+    }
 }
