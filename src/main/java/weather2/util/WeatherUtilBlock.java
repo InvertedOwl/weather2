@@ -444,7 +444,7 @@ public class WeatherUtilBlock {
 	}
 
 	public static BlockPos getPrecipitationHeightSafe(Level world, BlockPos pos) {
-		return getPrecipitationHeightSafe(world, pos, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES);
+		return getPrecipitationHeightSafe(world, pos, Heightmap.Types.MOTION_BLOCKING);
 	}
 
 	/**

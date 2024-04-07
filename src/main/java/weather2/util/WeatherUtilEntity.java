@@ -205,7 +205,10 @@ public class WeatherUtilEntity {
 
 	public static boolean isPosOutside(Level parWorld, Vec3 parPos, boolean cheapCheck, boolean eachSideClearCheck) {
 
-		if (WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(Mth.floor(parPos.x), 0, Mth.floor(parPos.z))).getY() < parPos.y+1) return true;
+		int height = WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(Mth.floor(parPos.x), 0, Mth.floor(parPos.z))).getY();
+		if (height < parPos.y+1) {
+			return true;
+		}
 		if (cheapCheck) return false;
 
 		int rangeCheck = 5;
@@ -263,7 +266,11 @@ public class WeatherUtilEntity {
 	public static boolean checkVecOutside(Level parWorld, Vec3 parPos, Vec3 parCheckPos) {
 		BlockHitResult blockhitresult = parWorld.clip(new ClipContext(parPos, parCheckPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, null));
 		if (blockhitresult.getType() == HitResult.Type.MISS) {
-			if (WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(Mth.floor(parCheckPos.x), 0, Mth.floor(parCheckPos.z))).getY() < parCheckPos.y) return true;
+			int height = WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(Mth.floor(parCheckPos.x), 0, Mth.floor(parCheckPos.z))).getY();
+			System.out.println("height: " + height + " vs " + parCheckPos.y);
+			if (height < parCheckPos.y) {
+				return true;
+			}
 		}
 		return false;
 	}
