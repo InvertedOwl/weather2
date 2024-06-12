@@ -69,8 +69,8 @@ public class WeatherUtil {
                 }
             });
 
-            boolean wat = canGrabViaLists(Blocks.TORCH.defaultBlockState());
-            System.out.println("wat: " + wat);
+            //boolean wat = canGrabViaLists(Blocks.TORCH.defaultBlockState());
+            //System.out.println("wat: " + wat);
         //}
     }
 

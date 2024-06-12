@@ -38,7 +38,7 @@ public class DeflectorBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState p_60515_, Level level, BlockPos pos, BlockState p_60518_, boolean p_60519_) {
-        System.out.println("removed deflector block");
+        //System.out.println("removed deflector block");
         if (level.getBlockEntity(pos) instanceof DeflectorBlockEntity deflectorBlockEntity) {
             deflectorBlockEntity.blockBroken();
         }

@@ -267,7 +267,7 @@ public class WeatherUtilEntity {
 		BlockHitResult blockhitresult = parWorld.clip(new ClipContext(parPos, parCheckPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, null));
 		if (blockhitresult.getType() == HitResult.Type.MISS) {
 			int height = WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(Mth.floor(parCheckPos.x), 0, Mth.floor(parCheckPos.z))).getY();
-			System.out.println("height: " + height + " vs " + parCheckPos.y);
+			//System.out.println("height: " + height + " vs " + parCheckPos.y);
 			if (height < parCheckPos.y) {
 				return true;
 			}

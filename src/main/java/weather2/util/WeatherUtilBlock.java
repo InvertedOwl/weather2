@@ -380,12 +380,12 @@ public class WeatherUtilBlock {
 					statePlaceLayerable = world.getBlockState(posPlaceLayerable);
 				}
 			} else {
-				System.out.println("wat! - " + statePlaceLayerable);
+				//System.out.println("wat! - " + statePlaceLayerable);
 			}
 		}
 
 		if (amountAllowedToAdd < 0) {
-			System.out.println("wat");
+			//System.out.println("wat");
 		}
 		int amountAdded = amountToAdd - amountAllowedToAdd;
 		amount -= amountAdded;

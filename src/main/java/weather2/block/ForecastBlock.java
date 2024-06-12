@@ -59,7 +59,7 @@ public class ForecastBlock extends Block {
                     count++;
                 }
             }
-            System.out.println(count);
+            //System.out.println(count);
         }
 
         return InteractionResult.CONSUME;
