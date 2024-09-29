@@ -551,7 +551,7 @@ public class SceneEnhancer implements Runnable {
 
 		if (world.getGameTime() % 20 == 0) {
 			StormObject stormObject = ClientTickHandler.weatherManager.getClosestStorm(entP.position(), ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
-			if (stormObject != null && entP.position().distanceTo(stormObject.pos) < stormObject.getSize()) {
+			if (stormObject != null && stormObject.distanceToEdge(entP.position()) < 0) {
 				isPlayerNearTornadoCached = true;
 			} else {
 				isPlayerNearTornadoCached = false;

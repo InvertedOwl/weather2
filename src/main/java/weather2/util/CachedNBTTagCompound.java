@@ -1,6 +1,11 @@
 package weather2.util;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Caches nbt data to remove redundant data sending over network
@@ -39,6 +44,47 @@ public class CachedNBTTagCompound {
 
 	public void setUpdateForced(boolean forced) {
 		this.forced = forced;
+	}
+
+	// Rectangle2D-related methods
+
+	/**
+	 * Saves a list of Rectangle2D objects to the NBT.
+	 */
+	public void putRectangleList(String key, List<Rectangle2D> rectangles) {
+		ListTag listTag = new ListTag();
+		for (Rectangle2D rect : rectangles) {
+			CompoundTag rectTag = new CompoundTag();
+			rectTag.putDouble("x", rect.getX());
+			rectTag.putDouble("y", rect.getY());
+			rectTag.putDouble("width", rect.getWidth());
+			rectTag.putDouble("height", rect.getHeight());
+			listTag.add(rectTag);
+		}
+		newData.put(key, listTag);
+		cachedData.put(key, listTag);
+	}
+
+	/**
+	 * Reads a list of Rectangle2D objects from the NBT.
+	 */
+	public List<Rectangle2D> getRectangleList(String key) {
+		List<Rectangle2D> rectangles = new ArrayList<>();
+		if (!newData.contains(key)) {
+			return rectangles; // Return empty list if key not found
+		}
+
+		ListTag listTag = newData.getList(key, Tag.TAG_COMPOUND);
+		for (int i = 0; i < listTag.size(); i++) {
+			CompoundTag rectTag = listTag.getCompound(i);
+			double x = rectTag.getDouble("x");
+			double y = rectTag.getDouble("y");
+			double width = rectTag.getDouble("width");
+			double height = rectTag.getDouble("height");
+			rectangles.add(new Rectangle2D.Double(x, y, width, height));
+		}
+
+		return rectangles;
 	}
 
 	public long getLong(String key) {
@@ -149,5 +195,4 @@ public class CachedNBTTagCompound {
 	public void updateCacheFromNew() {
 		this.cachedData = this.newData;
 	}
-
 }

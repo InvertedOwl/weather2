@@ -58,16 +58,16 @@ public class SirenBlockEntity extends BlockEntity {
 
                     if (storm != null) {
 
-                        if (pos.distanceTo(storm.pos) < storm.getSize()) {
+                        if (storm.distanceToEdge(pos) < 0) {
                             String soundToPlay = "siren_sandstorm_5_extra";
                             if (CoroUtilMisc.random.nextBoolean()) {
                                 soundToPlay = "siren_sandstorm_6_extra";
                             }
 
-                            float distScaleFunnyPitchChangeHaha = Math.max(0.1F, 1F - (float) ((pos.distanceTo(storm.pos)) / storm.getSize()));
+//                            float distScaleFunnyPitchChangeHaha = Math.max(0.1F, 1F - (float) ((pos.distanceTo(storm.pos)) / storm.getSize()));
 
                             this.lastPlayTime = System.currentTimeMillis() + 15000L;//WeatherUtilSound.soundToLength.get(soundToPlay) - 500L;
-                            WeatherUtilSound.playNonMovingSound(pos, "streaming." + soundToPlay, (float) ConfigSound.sirenVolume, distScaleFunnyPitchChangeHaha, storm.getSize());
+//                            WeatherUtilSound.playNonMovingSound(pos, "streaming." + soundToPlay, (float) ConfigSound.sirenVolume, distScaleFunnyPitchChangeHaha, storm.getSize());
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package weather2;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -22,6 +23,7 @@ public class ClientRegistry {
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         EntityRenderers.register(EntityRegistry.LIGHTNING_BOLT.get(), render -> new LightningBoltWeatherNewRenderer(render));
+//        Minecraft.getInstance().getI
     }
 
     @OnlyIn(Dist.CLIENT)

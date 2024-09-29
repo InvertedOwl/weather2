@@ -49,6 +49,8 @@ import weather2.weathersystem.tornado.ActiveTornadoConfig;
 import weather2.weathersystem.tornado.simple.Layer;
 import weather2.weathersystem.tornado.simple.TornadoFunnelSimple;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 public class StormObject extends WeatherObject {
@@ -231,8 +233,7 @@ public class StormObject extends WeatherObject {
 		super(parManager);
 		
 		pos = new Vec3(0, static_YPos_layer0, 0);
-		maxSize = ConfigStorm.Storm_MaxRadius;
-		
+
 		if (parManager.getWorld().isClientSide()) {
 			listParticlesCloud = new ArrayList<>();
 			listParticlesFunnel = new ArrayList<>();
@@ -782,8 +783,6 @@ public class StormObject extends WeatherObject {
 					//tickSnowFall();
 				}
 			} else {
-				//make layer 1 max size for visuals
-				size = maxSize;
 			}
 
 			if (layer == 0) {
@@ -1034,8 +1033,9 @@ public class StormObject extends WeatherObject {
 		//Weather.dbg("currentTopYBlock: " + currentTopYBlock);
 		if (levelCurIntensityStage >= STATE_THUNDER && !isBaby() && !isPet()) {
 			if (rand.nextInt((int)Math.max(1, ConfigStorm.Storm_LightningStrikeBaseValueOddsTo1 - (levelCurIntensityStage * 10))) == 0) {
-				int x = (int) Math.floor(pos.x + rand.nextInt(size) - rand.nextInt(size));
-				int z = (int) Math.floor(pos.z + rand.nextInt(size) - rand.nextInt(size));
+				Point2D point2D = generateRandomPointInRectangles();
+				int x = (int) Math.floor(pos.x + point2D.getX());
+				int z = (int) Math.floor(pos.z + point2D.getY());
 				if (world.isLoaded(new BlockPos(x, 0, z))) {
 					int y = world.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
 					if (world instanceof ServerLevel) {
@@ -1057,9 +1057,10 @@ public class StormObject extends WeatherObject {
 		//dont forget, this doesnt account for storm size, so small storms have high concentration of hail, as it grows, it appears to lessen in rate
 		if (isPrecipitating() && levelCurIntensityStage == STATE_HAIL && stormType == TYPE_LAND) {
 			//if (rand.nextInt(1) == 0) {
-			for (int i = 0; i < Math.max(1, ConfigStorm.Storm_HailPerTick * (size/maxSize)); i++) {
-				int x = (int) Math.floor(pos.x + rand.nextInt(size) - rand.nextInt(size));
-				int z = (int) Math.floor(pos.z + rand.nextInt(size) - rand.nextInt(size));
+			for (int i = 0; i < Math.max(1, ConfigStorm.Storm_HailPerTick); i++) {
+				Point2D point2D = generateRandomPointInRectangles();
+				int x = (int) Math.floor(posGround.x + point2D.getX());
+				int z = (int) Math.floor(posGround.z + point2D.getY());
 				if (world.isLoaded(new BlockPos(x, static_YPos_layer0, z)) && (world.getNearestPlayer(x, 50, z, 80, false) != null)) {
 					//int y = world.getPrecipitationHeight(x, z);
 					//if (world.canLightningStrikeAt(x, y, z)) {
@@ -1090,7 +1091,14 @@ public class StormObject extends WeatherObject {
 			if ((manager.getWorld().getGameTime() + (ID * 20)) % ConfigStorm.Storm_Rain_TrackAndExtinguishEntitiesRate == 0) {
 				listEntitiesUnderClouds.clear();
 				BlockPos posBP = CoroUtilBlock.blockPos(posGround.x, posGround.y, posGround.z);
-				List<LivingEntity> listEnts = manager.getWorld().getEntitiesOfClass(LivingEntity.class, new AABB(posBP).inflate(size));
+//				List<LivingEntity> listEnts = manager.getWorld().getEntitiesOfClass(LivingEntity.class, new AABB(posBP).inflate(size));
+				Set<LivingEntity> listEnts = new HashSet<>();
+				for (Rectangle2D rectangle2D : collider) {
+					List<LivingEntity> listCurrent = manager.getWorld().getEntitiesOfClass(LivingEntity.class, new AABB(rectangle2D.getMinX() + pos.x, 0, rectangle2D.getMinY() + pos.z, rectangle2D.getMaxX() + pos.x, pos.y, rectangle2D.getMaxY() + pos.z));
+					for (LivingEntity livingEntity : listCurrent) {
+						listEnts.add(livingEntity);
+					}
+				}
 				for (LivingEntity ent : listEnts) {
 					if (ent.level().canSeeSky(ent.blockPosition())) {
 						listEntitiesUnderClouds.add(ent);
@@ -1112,11 +1120,11 @@ public class StormObject extends WeatherObject {
 		//storm progression, heavy WIP
 		if (world.getGameTime() % 3 == 0) {
 			if (isGrowing) {
-				if (size < maxSize) {
-					size++;
-				} else {
-					//isGrowing = false;
-				}
+//				if (size < maxSize) {
+//					size++;
+//				} else {
+//					isGrowing = false;
+//				}
 			} else {
 				/*if (size > 0) {
 					size--;
@@ -1784,8 +1792,8 @@ public class StormObject extends WeatherObject {
 			spinSpeed += 0.1D;
 		}
 		
-		if (size == 0) size = 1;
-		int delay = Math.max(1, (int)(100F / size * 1F));
+//		if (size == 0) size = 1;
+		int delay = 1;
 		int loopSize = 1;//(int)(1 * size * 0.1F);
 		
 		int extraSpawning = 0;
@@ -1842,8 +1850,15 @@ public class StormObject extends WeatherObject {
 
 					listParticlesCloud.add(particle);
 				}*/
-				if (listParticlesCloud.size() < (size + extraSpawning) / 1F) {
-					double spawnRad = size;
+				double totalArea = 0;
+				for (Rectangle2D rect : collider) {
+					totalArea += rect.getWidth() * rect.getHeight();
+				}
+
+				double densityFactor = 1.0; // You can increase/decrease this value to control cloud density
+
+				if (listParticlesCloud.size() < (totalArea / extraSpawning) * densityFactor) {
+//					double spawnRad = size;
 					
 					/*if (layer != 0) {
 						spawnRad = size * 5;
@@ -1852,7 +1867,11 @@ public class StormObject extends WeatherObject {
 					//Weather.dbg("listParticlesCloud.size(): " + listParticlesCloud.size());
 					
 					//Vec3 tryPos = new Vec3(pos.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), layers.get(layer), pos.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-					Vec3 tryPos = new Vec3(pos.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), getPosTop().y + 30, pos.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
+					Point2D point2D = generateRandomPointInRectangles();
+					int x = (int) Math.floor(pos.x + point2D.getX());
+					int z = (int) Math.floor(pos.z + point2D.getY());
+
+					Vec3 tryPos = new Vec3(x, getPosTop().y + 30, z);
 					if (tryPos.distanceTo(playerAdjPos) < maxSpawnDistFromPlayer) {
 						if (getAvoidAngleIfTerrainAtOrAheadOfPosition(getAdjustedAngle(), tryPos) == 0) {
 							EntityRotFX particle;
@@ -1889,15 +1908,11 @@ public class StormObject extends WeatherObject {
 		if (levelCurIntensityStage >= STATE_HIGHWIND && !baby && !pet) {
 			for (int i = 0; i < (stormType == TYPE_WATER ? 50 : 3)/*loopSize/2*/; i++) {
 				if (listParticlesGround.size() < (stormType == TYPE_WATER ? 600 : 150)/*size + extraSpawning*/) {
-					double spawnRad = size/4*3;
-					
-					if (stormType == TYPE_WATER) {
-						spawnRad = size*3;
-					}
-					
 					//Weather.dbg("listParticlesCloud.size(): " + listParticlesCloud.size());
-					
-					Vec3 tryPos = new Vec3(pos.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), posGround.y, pos.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
+					Point2D point2D = generateRandomPointInRectangles();
+					int x = (int) Math.floor(pos.x + point2D.getX());
+					int z = (int) Math.floor(pos.z + point2D.getY());
+					Vec3 tryPos = new Vec3(x, posGround.y, z);
 					if (tryPos.distanceTo(playerAdjPos) < maxSpawnDistFromPlayer) {
 						int groundY = WeatherUtilBlock.getPrecipitationHeightSafe(manager.getWorld(), new BlockPos((int)tryPos.x, 0, (int)tryPos.z)).getY();
 						EntityRotFX particle;
@@ -1932,22 +1947,17 @@ public class StormObject extends WeatherObject {
 		delay = 1;
 		loopSize = 2;
 		
-		double spawnRad = size/48;
-		
+
 		if (levelCurIntensityStage >= STATE_STAGE5) {
-			spawnRad = 200;
 			loopSize = 10;
 			sizeMaxFunnelParticles = 1200;
 		} else if (levelCurIntensityStage >= STATE_STAGE4) {
-			spawnRad = 150;
 			loopSize = 8;
 			sizeMaxFunnelParticles = 1000;
 		} else if (levelCurIntensityStage >= STATE_STAGE3) {
-			spawnRad = 100;
 			loopSize = 6;
 			sizeMaxFunnelParticles = 800; 
 		} else if (levelCurIntensityStage >= STATE_STAGE2) {
-			spawnRad = 50;
 			loopSize = 4;
 			sizeMaxFunnelParticles = 600;
 		} else {
@@ -1974,8 +1984,10 @@ public class StormObject extends WeatherObject {
 
 						if (listParticlesFunnel.size() < sizeMaxFunnelParticles) {
 
-
-							Vec3 tryPos = new Vec3(pos.x + (rand.nextDouble() * spawnRad) - (rand.nextDouble() * spawnRad), pos.y, pos.z + (rand.nextDouble() * spawnRad) - (rand.nextDouble() * spawnRad));
+							Point2D point2D = generateRandomPointInRectangles();
+							int x = (int) Math.floor(pos.x + point2D.getX());
+							int z = (int) Math.floor(pos.z + point2D.getY());
+							Vec3 tryPos = new Vec3(x, pos.y, z);
 							//int y = entP.world.getPrecipitationHeight((int)tryPos.x, (int)tryPos.z);
 
 							if (tryPos.distanceTo(playerAdjPos) < maxSpawnDistFromPlayer) {
@@ -2112,7 +2124,7 @@ public class StormObject extends WeatherObject {
 		        
 				double curSpeed = Math.sqrt(ent.getMotionX() * ent.getMotionX() + ent.getMotionY() * ent.getMotionY() + ent.getMotionZ() * ent.getMotionZ());
 				
-				double curDist = ent.getDistance(getPosTop().x, ent.getPosY(), getPosTop().z);
+				double curDist = distanceToEdge(ent.getPos());
 
 				float dropDownRange = 15F;
 		        
@@ -2130,7 +2142,7 @@ public class StormObject extends WeatherObject {
 				
 				if (isSpinning()) {
 					double speed = spinSpeed + (rand.nextDouble() * 0.01D);
-					double distt = size;//300D;
+//					double distt = size;//300D;
 					
 					
 					double vecX = ent.getPosX() - getPosTop().x;
@@ -2147,7 +2159,7 @@ public class StormObject extends WeatherObject {
 			        //random addition
 			        angle += rand.nextInt(10) - rand.nextInt(10);
 			        
-			        if (curDist > distt) {
+			        if (curDist < 0) {
 			        	//System.out.println("curving");
 			        	angle += 40;
 			        	//speed = 1D;
@@ -2291,7 +2303,7 @@ public class StormObject extends WeatherObject {
 				double curSpeed = Math.sqrt(ent.getMotionX() * ent.getMotionX() + ent.getMotionY() * ent.getMotionY() + ent.getMotionZ() * ent.getMotionZ());
 			
 				double speed = Math.max(0.2F, 5F * spinSpeed) + (rand.nextDouble() * 0.01D);
-				double distt = size;//300D;
+//				double distt = size;//300D;
 				
 				
 				double vecX = ent.getPosX() - pos.x;
@@ -2871,14 +2883,14 @@ public class StormObject extends WeatherObject {
     	if (levelCurIntensityStage == STATE_NORMAL) {
     		entityfx.setMaxAge(300 + rand.nextInt(100));
     	} else {
-    		entityfx.setMaxAge((size/2) + rand.nextInt(100));
+//    		entityfx.setMaxAge((size/2) + rand.nextInt(100));
     	}
     	
 		//pieces that move down with funnel need render order shift, also only for relevant storm formations
 		if (entityfx.getEntityId() % 20 < 5 && isSpinning()) {
 			entityfx.renderOrder = 1;
 			
-			entityfx.setMaxAge((size) + rand.nextInt(100));
+//			entityfx.setMaxAge((size) + rand.nextInt(100));
 		}
     	
     	float randFloat = (rand.nextFloat() * 0.6F);

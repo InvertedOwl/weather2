@@ -75,6 +75,7 @@ public class Weather
             .icon(() -> WeatherItems.WEATHER_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(WeatherItems.WEATHER_ITEM.get());
+                output.accept(WeatherItems.RADAR_MAP.get());
                 output.accept(WeatherItems.BLOCK_TORNADO_SIREN_ITEM.get());
                 output.accept(WeatherItems.BLOCK_TORNADO_SENSOR_ITEM.get());
                 output.accept(WeatherItems.BLOCK_DEFLECTOR_ITEM.get());
@@ -83,6 +84,7 @@ public class Weather
                 output.accept(WeatherItems.BLOCK_ANEMOMETER_ITEM.get());
                 output.accept(WeatherItems.BLOCK_WIND_VANE_ITEM.get());
                 output.accept(WeatherItems.BLOCK_WIND_TURBINE_ITEM.get());
+//                output.accept(WeatherItems.RADAR_MAP.get());
             }).build());
 
     public Weather() {

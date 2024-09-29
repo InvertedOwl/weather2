@@ -20,6 +20,7 @@ import weather2.util.WeatherUtilBlock;
 import weather2.weathersystem.WeatherManager;
 import weather2.weathersystem.wind.WindManager;
 
+import java.awt.geom.Point2D;
 import java.util.Random;
 
 public class WeatherObjectParticleStorm extends WeatherObject {
@@ -79,11 +80,11 @@ public class WeatherObjectParticleStorm extends WeatherObject {
 	public static boolean isDesert(Holder<Biome> biome, boolean forSpawn) {
 		return biome.get().equals(Biomes.DESERT) || (!forSpawn && biome.get().equals(Biomes.RIVER)) || biome.unwrap().left().toString().toLowerCase().contains("desert");
 	}
-
-	@Override
-	public int getSize() {
-		return 250;
-	}
+//
+//	@Override
+//	public int getSize() {
+//		return 250;
+//	}
 	
 	@Override
 	public void tick() {
@@ -187,9 +188,9 @@ public class WeatherObjectParticleStorm extends WeatherObject {
 	}
 
 	public Vec3 getRandomPosInStorm() {
-		Random rand = new Random();
-		int x = (int) Math.floor(posGround.x + rand.nextInt(getSize()) - rand.nextInt(getSize()));
-		int z = (int) Math.floor(posGround.z + rand.nextInt(getSize()) - rand.nextInt(getSize()));
+		Point2D point2D = generateRandomPointInRectangles();
+		int x = (int) Math.floor(posGround.x + point2D.getX());
+		int z = (int) Math.floor(posGround.z + point2D.getY());
 		int y = WeatherUtilBlock.getPrecipitationHeightSafe(manager.getWorld(), new BlockPos(x, 128, z)).getY();
 		Vec3 vec = new Vec3(x, y, z);
 		return vec;

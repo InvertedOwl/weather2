@@ -36,8 +36,11 @@ public class EventHandlerForge {
 	@OnlyIn(Dist.CLIENT)
     public void worldRender(RenderLevelStageEvent event)
     {
+		ClientTickHandler.getClientWeather().tickRender(0);
+
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
 			ClientTickHandler.getClientWeather();
+
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
 			if (ConfigDebug.Particle_engine_render) {
 				ClientTickHandler.particleManagerExtended().render(event.getPoseStack(), null, Minecraft.getInstance().gameRenderer.lightTexture(), event.getCamera(), event.getPartialTick(), event.getFrustum());
@@ -57,11 +60,12 @@ public class EventHandlerForge {
 	public void onFogRender(ViewportEvent.RenderFog event) {
 		SceneEnhancer.getFogAdjuster().onFogRender(event);
 	}
-	
+
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
 	public void onRenderTick(TickEvent.RenderTickEvent event) {
 		SceneEnhancer.renderTick(event);
+
 	}
 
 	@SubscribeEvent

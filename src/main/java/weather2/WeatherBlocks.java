@@ -35,6 +35,7 @@ public class WeatherBlocks {
 
     public static final String SAND_LAYER_PLACEABLE = "sand_layer_placeable";
     public static final String WEATHER_ITEM = "weather_item";
+    public static final String RADAR_MAP = "radar_map";
     public static final String POCKET_SAND = "pocket_sand";
     public static final String WIND_TURBINE = "wind_turbine";
 

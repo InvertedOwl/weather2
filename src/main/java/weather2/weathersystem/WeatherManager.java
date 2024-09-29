@@ -266,7 +266,7 @@ public abstract class WeatherManager implements IWorldData {
 
 		return getStormObjects().stream()
 				.map(wo -> (StormObject)wo)
-				.anyMatch(so -> !so.isDead && so.attrib_precipitation && so.pos.distanceTo(parPos) < so.size);
+				.anyMatch(so -> !so.isDead && so.attrib_precipitation && so.distanceToEdge(parPos) < 0);
 	}
 
 	/**

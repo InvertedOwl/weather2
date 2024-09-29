@@ -6,6 +6,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import weather2.item.RadarMapItem;
 import weather2.item.WeatherItem;
 
 public class WeatherItems {
@@ -13,6 +14,7 @@ public class WeatherItems {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Weather.MODID);
 
     public static final RegistryObject<Item> WEATHER_ITEM = ITEMS.register(WeatherBlocks.WEATHER_ITEM, () -> new WeatherItem(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> RADAR_MAP = ITEMS.register(WeatherBlocks.RADAR_MAP, RadarMapItem::new);
     public static final RegistryObject<BlockItem> BLOCK_DEFLECTOR_ITEM = WeatherItems.ITEMS.register(WeatherBlocks.DEFLECTOR, () -> new BlockItem(WeatherBlocks.BLOCK_DEFLECTOR.get(), new Item.Properties()));
     public static final RegistryObject<BlockItem> BLOCK_TORNADO_SIREN_ITEM = ITEMS.register(WeatherBlocks.TORNADO_SIREN, () -> new BlockItem(WeatherBlocks.BLOCK_TORNADO_SIREN.get(), new Item.Properties()));
     public static final RegistryObject<BlockItem> BLOCK_TORNADO_SENSOR_ITEM = ITEMS.register(WeatherBlocks.TORNADO_SENSOR, () -> new BlockItem(WeatherBlocks.BLOCK_TORNADO_SENSOR.get(), new Item.Properties()));

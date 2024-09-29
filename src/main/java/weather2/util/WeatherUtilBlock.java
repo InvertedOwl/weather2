@@ -426,11 +426,7 @@ public class WeatherUtilBlock {
 	public static BlockState setBlockWithLayerState(Block block, int height) {
 		boolean solidBlockUnderMode = true;
 		if (block == Blocks.SNOW) {
-			if (height == layerableHeightPropMax && solidBlockUnderMode) {
-				return Blocks.SNOW_BLOCK.defaultBlockState();
-			} else {
-				return block.defaultBlockState().setValue(SnowLayerBlock.LAYERS, height);
-			}
+			return block.defaultBlockState().setValue(SnowLayerBlock.LAYERS, height);
 		} else if (block == WeatherBlocks.BLOCK_SAND_LAYER.get()) {
 			if (height == layerableHeightPropMax && solidBlockUnderMode) {
 				return Blocks.SAND.defaultBlockState();
@@ -438,7 +434,6 @@ public class WeatherUtilBlock {
 				return block.defaultBlockState().setValue(SandLayerBlock.LAYERS, height);
 			}
 		} else {
-			//means missing implementation
 			return null;
 		}
 	}

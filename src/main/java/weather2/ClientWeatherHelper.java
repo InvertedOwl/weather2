@@ -7,6 +7,9 @@ import net.minecraft.world.phys.Vec3;
 import weather2.config.ConfigMisc;
 import weather2.config.ConfigStorm;
 import weather2.weathersystem.storm.StormObject;
+import net.minecraft.network.chat.Component;
+
+import java.awt.*;
 
 /**
  * Moving client weather logic to here from scene enhancer.
@@ -69,8 +72,6 @@ public final class ClientWeatherHelper {
 		double stormDist = 9999;
 		float tempAdj = 1F;
 
-		float sizeToUse = 0;
-
 		float overcastModeMinPrecip = 0.23F;
 		//overcastModeMinPrecip = 0.16F;
 		//overcastModeMinPrecip = (float) ConfigStorm.Storm_Rain_Overcast_Amount;
@@ -79,22 +80,17 @@ public final class ClientWeatherHelper {
 		//evaluate if storms size is big enough to be over player
 		if (storm != null) {
 
-			sizeToUse = storm.size;
-			//extend overcast effect, using x2 for now since we cant cancel sound and ground particles, originally was 4x, then 3x, change to that for 1.7 if lex made change
-			if (forOvercast) {
-				sizeToUse *= 1F;
-			}
-
-			stormDist = storm.pos.distanceTo(plPos);
-			//System.out.println("storm dist: " + stormDist);
-			if (sizeToUse > stormDist) {
+			stormDist = storm.distanceToEdge(plPos);
+			if (stormDist < 0) {
 				closeEnough = true;
 			}
 		}
 
 		if (closeEnough) {
 			//max of 1 if at center of storm, subtract player xz distance out of the size to act like its a weaker storm
-			double stormIntensity = (sizeToUse - stormDist) / sizeToUse;
+
+			double stormIntensity = 1-Math.exp(-Math.abs(stormDist)/10);
+//			double stormIntensity = (sizeToUse - stormDist) / sizeToUse;
 
 			//why is this not a -1 or 1 anymore?!
 			//tempAdj = storm.levelTemperature/* > 0 ? 1F : -1F*/;
