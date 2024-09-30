@@ -20,18 +20,7 @@ public class EnergyManager extends EnergyStorage {
 
 	public void setReceiveOnly() {
 		canExtract = false;
-	}/*
-
-	@Override
-	public void read(CompoundTag nbt) {
-		setEnergyStored(nbt.getInt("Energy"));
 	}
-
-	@Override
-	public CompoundTag write(CompoundTag nbt) {
-		nbt.putInt("Energy", energy);
-		return nbt;
-	}*/
 
 	public int getMaxEnergyReceived() {
 		return this.maxReceive;
@@ -63,7 +52,6 @@ public class EnergyManager extends EnergyStorage {
 
 	public <T> LazyOptional<T> getCapability(Capability<T> capability) {
 		if (capability == ForgeCapabilities.ENERGY) {
-            //IEnergyStorage energyStorage = new EnergyStorageWrapper(this, canExtract);
             return LazyOptional.of(() -> this).cast();
         }
 

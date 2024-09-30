@@ -93,11 +93,6 @@ public class LightningBoltWeatherNew extends Entity {
             this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F, false);
             this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F, false);
          } else {
-            /*Difficulty difficulty = this.level().getDifficulty();
-            if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
-               this.spawnFire(4);
-            }*/
-
             this.powerLightningRod();
             clearCopperOnLightningStrike(this.level(), this.getStrikePosition());
             this.gameEvent(GameEvent.LIGHTNING_STRIKE);
@@ -107,24 +102,12 @@ public class LightningBoltWeatherNew extends Entity {
       --this.life;
       if (this.life < 0) {
          if (this.flashes == 0) {
-            if (this.level() instanceof ServerLevel) {
-               /*List<Entity> list = this.level().getEntities(this, new AABB(this.getX() - 15.0D, this.getY() - 15.0D, this.getZ() - 15.0D, this.getX() + 15.0D, this.getY() + 6.0D + 15.0D, this.getZ() + 15.0D), (p_147140_) -> {
-                  return p_147140_.isAlive() && !this.hitEntities.contains(p_147140_);
-               });
-
-               for(ServerPlayer serverplayer : ((ServerLevel)this.level()).getPlayers((p_147157_) -> {
-                  return p_147157_.distanceTo(this) < 256.0F;
-               })) {
-                  CriteriaTriggers.LIGHTNING_STRIKE.trigger(serverplayer, this, list);
-               }*/
-            }
 
             this.discard();
          } else if (this.life < -this.random.nextInt(10)) {
             --this.flashes;
             this.life = 1;
             this.seed = this.random.nextLong();
-            /*this.spawnFire(0);*/
          }
       }
 
@@ -133,11 +116,6 @@ public class LightningBoltWeatherNew extends Entity {
             this.level().setSkyFlashTime(2);
          } else if (!this.visualOnly) {
             List<Entity> list1 = this.level().getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), Entity::isAlive);
-
-            /*for(Entity entity : list1) {
-               if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, this))
-               entity.thunderHit((ServerLevel)this.level(), this);
-            }*/
 
             this.hitEntities.addAll(list1);
             if (this.cause != null) {

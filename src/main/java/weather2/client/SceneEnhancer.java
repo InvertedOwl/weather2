@@ -51,7 +51,7 @@ import weather2.weathersystem.WeatherManagerClient;
 import weather2.weathersystem.fog.FogAdjuster;
 import weather2.weathersystem.storm.StormObject;
 import weather2.weathersystem.storm.WeatherObjectParticleStorm;
-import weather2.weathersystem.tornado.TornadoManagerTodoRenameMe;
+import weather2.weathersystem.tornado.TornadoManager;
 import weather2.weathersystem.wind.WindManager;
 
 import java.util.*;
@@ -99,7 +99,7 @@ public class SceneEnhancer implements Runnable {
 	public static int particleRateLerp = 0;
 	public static int particleRateLerpMax = 100;
 
-	public static TornadoManagerTodoRenameMe playerManagerClient;
+	public static TornadoManager playerManagerClient;
 
 	private static Biome lastBiomeIn = null;
 
@@ -143,7 +143,7 @@ public class SceneEnhancer implements Runnable {
 
 			if (testTornadoTech) {
 				if (playerManagerClient == null) {
-					playerManagerClient = new TornadoManagerTodoRenameMe();
+					playerManagerClient = new TornadoManager();
 				}
 
 				playerManagerClient.tick(client.level);

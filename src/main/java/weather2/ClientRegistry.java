@@ -23,7 +23,6 @@ public class ClientRegistry {
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         EntityRenderers.register(EntityRegistry.LIGHTNING_BOLT.get(), render -> new LightningBoltWeatherNewRenderer(render));
-//        Minecraft.getInstance().getI
     }
 
     @OnlyIn(Dist.CLIENT)

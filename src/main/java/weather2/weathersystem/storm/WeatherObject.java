@@ -35,20 +35,38 @@ public class WeatherObject {
 	private static final Random random = new Random();
 
 	//used as radius
-	public List<Rectangle2D> collider = new ArrayList<>();
+	public List<CloudDefinition> bounds = new ArrayList<>();
 
 	//unused
 	public EnumWeatherObjectType weatherObjectType = EnumWeatherObjectType.CLOUD;
 
 	private CachedNBTTagCompound nbtCache;
 
-	//private NBTTagCompound cachedClientNBTState;
-
 	public WeatherObject(WeatherManager parManager) {
 		manager = parManager;
 		nbtCache = new CachedNBTTagCompound();
-		collider.add(new Rectangle2D.Double(-50, -50, 100, 100));
-		collider.add(new Rectangle2D.Double(-50, -150, 100, 100));
+
+		int maxIntensity = 40;
+
+		int currentIntensity = 10;
+		while (currentIntensity < maxIntensity) {
+			// Decreasing size for each consecutive intensity level
+			int size = (maxIntensity/random.nextInt(currentIntensity)) * 10;
+
+			// Offset by a small x and y, not usually enough to leave the last cloud, but I suppose its possible
+			int x = -size/2 + (random.nextInt(size/2)-size/4);
+			int y = -size/2 + (random.nextInt(size/2)-size/4);
+
+			// even smaller offset it width and height. this is just to add a tiny bit of realism but it's not super necessaery
+			int width = size + (random.nextInt(size/6)-size/12);
+			int height = size + (random.nextInt(size/6)-size/12);
+
+			bounds.add(new CloudDefinition(new Rectangle2D.Double(x, y, width, height), currentIntensity * 2));
+
+			// Update current intensity but a small but non-zero random integer.
+			currentIntensity += random.nextInt(5) + 5;
+		}
+
 	}
 	
 	public void initFirstTime() {
@@ -60,10 +78,14 @@ public class WeatherObject {
 	}
 
 	public Point2D generateRandomPointInRectangles() {
-		List<Rectangle2D> rectangles = collider;
-		if (rectangles == null || rectangles.isEmpty()) {
-//			throw new IllegalArgumentException("The list of rectangles cannot be null or empty.");
+		List<CloudDefinition> clouds = bounds;
+		if (clouds == null || clouds.isEmpty()) {
 			return new Point2D.Double(0, 0);
+		}
+
+		List<Rectangle2D> rectangles = new ArrayList<>();
+		for (CloudDefinition cloud : clouds) {
+			rectangles.add(cloud.bounds);
 		}
 
 		// Compute the bounding box of all rectangles
@@ -145,8 +167,8 @@ public class WeatherObject {
 		double x = point.x();
 		double y = point.z();
 
-		for (Rectangle2D rect : collider) {
-			double dist = signedDistanceToRect(x, y, rect);
+		for (CloudDefinition cloud : bounds) {
+			double dist = signedDistanceToRect(x, y, cloud.bounds);
 			if (dist < minDist) {
 				minDist = dist;
 			}
@@ -164,12 +186,9 @@ public class WeatherObject {
 	}
 	
 	public void remove() {
-		//Weather.dbg("storm killed, ID: " + ID);
-		
+
 		isDead = true;
 		
-		//cleanup memory
-		//if (FMLCommonHandler.instance().getEffectiveSide() == Dist.CLIENT/*manager.getWorld().isRemote*/) {
 		if (EffectiveSide.get().equals(LogicalSide.CLIENT)) {
 			cleanupClient();
 		}
@@ -201,12 +220,10 @@ public class WeatherObject {
 	public void nbtSyncFromServer() {
 		CachedNBTTagCompound parNBT = this.getNbtCache();
 		ID = parNBT.getLong("ID");
-		//Weather.dbg("StormObject " + ID + " receiving sync");
-		
+
 		pos = new Vec3(parNBT.getDouble("posX"), parNBT.getDouble("posY"), parNBT.getDouble("posZ"));
-		//motion = new Vec3(parNBT.getDouble("motionX"), parNBT.getDouble("motionY"), parNBT.getDouble("motionZ"));
 		motion = new Vec3(parNBT.getDouble("vecX"), parNBT.getDouble("vecY"), parNBT.getDouble("vecZ"));
-		collider = parNBT.getRectangleList("collider");
+		bounds = parNBT.getCloudDefinitionList("bounds");
 		this.weatherObjectType = EnumWeatherObjectType.get(parNBT.getInt("weatherObjectType"));
 	}
 	
@@ -216,9 +233,6 @@ public class WeatherObject {
 		nbt.putDouble("posY", pos.y);
 		nbt.putDouble("posZ", pos.z);
 
-		/*nbt.putDouble("motionX", motion.xCoord);
-		nbt.putDouble("motionY", motion.yCoord);
-		nbt.putDouble("motionZ", motion.zCoord);*/
 		nbt.putDouble("vecX", motion.x);
 		nbt.putDouble("vecY", motion.y);
 		nbt.putDouble("vecZ", motion.z);
@@ -227,7 +241,7 @@ public class WeatherObject {
 		//just blind set ID into non cached data so client always has it, no need to check for forced state and restore orig state
 		nbt.getNewNBT().putLong("ID", ID);
 
-		nbt.putRectangleList("collider", collider);
+		nbt.putCloudDefinitionList("bounds", bounds);
 		nbt.putInt("weatherObjectType", this.weatherObjectType.ordinal());
 	}
 
@@ -239,8 +253,8 @@ public class WeatherObject {
 		this.nbtCache = nbtCache;
 	}
 
-	public List<Rectangle2D> getCollider() {
-		return collider;
+	public List<CloudDefinition> getCollider() {
+		return bounds;
 	}
 	
 }

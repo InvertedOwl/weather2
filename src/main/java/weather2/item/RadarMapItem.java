@@ -41,10 +41,16 @@ public class RadarMapItem extends MapItem {
         } else {
             Integer mapId = MapItem.getMapId(itemStack);
             if (mapId == null) {
+                // Initialize map data with a default scale of 2
                 ItemStack newMapItem = MapItem.create(world, (int) player.getX(), (int) player.getZ(), (byte) 2, true, false);
                 mapId = MapItem.getMapId(newMapItem);
 
                 itemStack.getOrCreateTag().putInt("map", mapId);
+
+                MapItemSavedData mapData = MapItem.getSavedData(itemStack, world);
+                System.out.println(mapData.centerX + " Center X");
+                itemStack.getOrCreateTag().putInt("centerX", mapData.centerX);
+                itemStack.getOrCreateTag().putInt("centerZ", mapData.centerZ);
             }
             return InteractionResultHolder.consume(itemStack);
         }

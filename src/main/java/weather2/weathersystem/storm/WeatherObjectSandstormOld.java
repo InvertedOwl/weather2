@@ -56,7 +56,6 @@ public class WeatherObjectSandstormOld extends WeatherObject {
 
 		if (!manager.getWorld().isClientSide()) {
 			this.age++;
-			//CULog.dbg("this.age: " + this.age);
 			if (this.age > this.maxAge) {
 				this.remove();
 			}

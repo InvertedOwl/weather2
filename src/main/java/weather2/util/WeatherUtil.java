@@ -55,23 +55,17 @@ public class WeatherUtil {
     }
 
     public static void testAllBlocks() {
-        //Blocks.GLASS
-        //if (!ConfigTornado.Storm_Tornado_GrabList.equals(lastConfigChecked)) {
-            lastConfigChecked = ConfigTornado.Storm_Tornado_GrabList;
-            CULog.log("PRINTING OUT ALL WEATHER2 TORNADO GRABBABLE BLOCKS WITH CURRENT CONFIG: ");
-            ForgeRegistries.BLOCKS.forEach(block -> {
-                List<BlockState> list = block.getStateDefinition().getPossibleStates();
-                for (BlockState state : list) {
-                    boolean result = canGrabViaLists(state);
-                    if (result) {
-                        CULog.log(state + " -> " + result);
-                    }
+        lastConfigChecked = ConfigTornado.Storm_Tornado_GrabList;
+        CULog.log("PRINTING OUT ALL WEATHER2 TORNADO GRABBABLE BLOCKS WITH CURRENT CONFIG: ");
+        ForgeRegistries.BLOCKS.forEach(block -> {
+            List<BlockState> list = block.getStateDefinition().getPossibleStates();
+            for (BlockState state : list) {
+                boolean result = canGrabViaLists(state);
+                if (result) {
+                    CULog.log(state + " -> " + result);
                 }
-            });
-
-            //boolean wat = canGrabViaLists(Blocks.TORCH.defaultBlockState());
-            //System.out.println("wat: " + wat);
-        //}
+            }
+        });
     }
 
     public static String addNamespaceIfMissing(String str) {
@@ -138,9 +132,6 @@ public class WeatherUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        //test
-        //return calendar.get(Calendar.MONTH) == Calendar.MARCH && calendar.get(Calendar.DAY_OF_MONTH) == 25;
-
         return calendar.get(Calendar.MONTH) == Calendar.APRIL && calendar.get(Calendar.DAY_OF_MONTH) == 1;
     }
 
@@ -198,15 +189,12 @@ public class WeatherUtil {
                         return result; //force return false to prevent unchecked future code outside scope
                     } else {
 
-                        //float strVsBlock = block.getBlockHardness(block.defaultBlockState(), parWorld, new BlockPos(0, 0, 0)) - (((itemStr.getStrVsBlock(block.defaultBlockState()) - 1) / 4F));
                         float strVsBlock = state.getDestroySpeed(parWorld, new BlockPos(0, 0, 0)) - (((itemStr.getDestroySpeed(block.defaultBlockState()) - 1) / 4F));
 
-                        //System.out.println(strVsBlock);
-                        if (/*block.getHardness() <= 10000.6*/ (strVsBlock <= strMax && strVsBlock >= strMin) ||
+                        if ((strVsBlock <= strMax && strVsBlock >= strMin) ||
                                 (state.getBlock().defaultMapColor() == MapColor.WOOD) ||
                                 state.getBlock().defaultMapColor() == MapColor.WOOL ||
-                                state.getBlock().defaultMapColor() == MapColor.PLANT ||/*
-                                state.getMaterial() == Material.VINE ||*/
+                                state.getBlock().defaultMapColor() == MapColor.PLANT ||
                                 block instanceof TallGrassBlock) {
                             if (!safetyCheck(state)) {
                                 result = false;
@@ -214,7 +202,6 @@ public class WeatherUtil {
                         } else {
                             result = false;
                         }
-
                     }
                 }
 
@@ -227,11 +214,6 @@ public class WeatherUtil {
                     }
                 }
             }
-
-            //TODO: 1.18
-            /*if (block == CommonProxy.blockWeatherMachine) {
-                result = false;
-            }*/
 
             return result;
         }

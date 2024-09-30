@@ -63,10 +63,7 @@ public class ServerTickHandler {
 	public static void tickServer(TickEvent.ServerTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) {
 			for (WeatherManagerServer manager : MANAGERS.values()) {
-				//for non whitelisted dimensions i chose to still tick the manager, and also register it, so it can get cleaned up if people spawn stuff or change config
-				//if (WeatherUtilConfig.listDimensionsWeather.contains(manager.getWorld().dimension().location().toString())) {
-					manager.tick();
-				//}
+				manager.tick();
 			}
 
 			processIMCMessages();
@@ -75,26 +72,15 @@ public class ServerTickHandler {
 
 	@SubscribeEvent
 	public static void tickServer(TickEvent.LevelTickEvent event) {
-
-		//TODO: TEMPPPPPPPPPPPP
-		//ConfigMisc.Aesthetic_Only_Mode = true;
-		//ConfigMisc.overcastMode = true;
-
 		if (event.level.dimension() == Level.OVERWORLD && event.phase == TickEvent.Phase.END && !event.level.isClientSide()) {
 			if (ConfigMisc.Aesthetic_Only_Mode) {
 				if (!ConfigMisc.overcastMode) {
 					ConfigMisc.overcastMode = true;
 					CULog.dbg("detected Aesthetic_Only_Mode on, setting overcast mode on");
-					//WeatherUtilConfig.setOvercastModeServerSide(ConfigMisc.overcastMode);
 					ConfigMod.forceSaveAllFilesFromRuntimeSettings();
 					syncServerConfigToClient(null);
 				}
 			}
-
-			//TODO: only sync when things change? is now sent via PlayerLoggedInEvent at least
-			/*if (event.level.getGameTime() % 200 == 0) {
-				syncServerConfigToClient(null);
-			}*/
 		}
 
 	}
@@ -108,7 +94,6 @@ public class ServerTickHandler {
 				if (msg.method().equals("player_tornado")) {
 					int timeTicks = tag.getInt("time_ticks");
 					boolean baby = tag.getBoolean("baby");
-					//boolean sharknado = tag.getBoolean("sharknado");
 					String uuid = tag.getString("uuid");
 					Player player = wm.getWorld().getPlayerByUUID(UUID.fromString(uuid));
 					if (player != null) {
@@ -120,7 +105,6 @@ public class ServerTickHandler {
 						stormObject.setupPlayerControlledTornado(player);
 						stormObject.setPlayerControlledTimeLeft(timeTicks);
 						stormObject.setBaby(baby);
-						//stormObject.setSharknado(sharknado);
 
 						wm.addStormObject(stormObject);
 						wm.syncStormNew(stormObject);

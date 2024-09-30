@@ -41,7 +41,6 @@ public class TornadoFunnel {
         public Vector3d posStart = new Vector3d(0, 0, 0);
         public Vector3d posEnd = new Vector3d(0, 20, 0);
 
-        //public Vector3d vecDir = new Vector3d(0, 0, 0);
         public float vecDirX = 0;
         public float vecDirZ = 0;
 
@@ -73,13 +72,11 @@ public class TornadoFunnel {
 
         Random rand = new Random();
 
-        //listFunnel.clear();
 
         while (listFunnel.size() < funnelPieces) {
             addPieceToEnd(new FunnelPiece());
         }
 
-        //for (FunnelPiece piece : listFunnel) {
         for (int i = 0; i < listFunnel.size(); i++) {
             FunnelPiece piece = listFunnel.get(i);
 
@@ -92,7 +89,6 @@ public class TornadoFunnel {
                 if (i == 0) {
                     piece.posStart = new Vector3d(entP.getX(), entP.getY(), entP.getZ());
                     piece.posEnd = new Vector3d(entP.getX(), entP.getY() + height, entP.getZ());
-                    //piece.posEnd = new Vector3d(entP.posX, entP.posY + entP.getEyeHeight(), entP.posZ);
 
                 } else {
                     Vector3d prev = listFunnel.get(i-1).posEnd;
@@ -120,16 +116,6 @@ public class TornadoFunnel {
 
             particleCount = layers * amountPerLayer;
 
-            /*while (piece.listParticles.size() > particleCount) {
-                piece.listParticles.get(piece.listParticles.size() - 1).setExpired();
-                piece.listParticles.remove(piece.listParticles.size() - 1);
-            }*/
-
-            /*while (piece.listParticles.size() > 0) {
-                piece.listParticles.get(piece.listParticles.size() - 1).setExpired();
-                piece.listParticles.remove(piece.listParticles.size() - 1);
-            }*/
-
             if (piece.bezierCurve == null || entP.level().getGameTime() % 40 == 0) {
                 Vector3f[] vecs = new Vector3f[4];
                 for (int ii = 0; ii < vecs.length; ii++) {
@@ -149,45 +135,22 @@ public class TornadoFunnel {
             while (piece.listParticles.size() < particleCount) {
                 BlockPos pos = CoroUtilBlock.blockPos(piece.posEnd.x, piece.posEnd.y, piece.posEnd.z);
 
-                //if (entP.getDistanceSq(pos) < 10D * 10D) continue;
-
-                //pos = world.getPrecipitationHeight(pos).add(0, 1, 0);
-
                 ClientLevel world = (ClientLevel)entP.level();
 
                 ParticleTexFX particleTest = new ParticleTexFX(world, pos.getX() + rand.nextFloat(),
                         pos.getY(),
                         pos.getZ() + rand.nextFloat(), 0, 0, 0, ParticleRegistry.square16);
 
-                //particleTest.setSprite();
                 particleTest.setMaxAge(250);
                 particleTest.setParticleSpeed(0, 0, 0);
                 particleTest.setScale(0.1F);
-                //particleTest.setColor(0.1F * (particles.size() % particleCountCircle), 0, 0);
                 particleTest.setColor(world.random.nextFloat(), world.random.nextFloat(), world.random.nextFloat());
                 particleTest.setGravity(0);
-                /*if (piece.listParticles.size() < particleCountCircle * 5) {
-                    particleTest.setColor(1, 1, 1);
-                }*/
-                //particleTest.move(0, -0.1, 0);
                 Minecraft.getInstance().particleEngine.add(particleTest);
 
                 piece.listParticles.add(particleTest);
             }
         }
-
-        //reset
-        /*for (int i = 0; i < listFunnel.size(); i++) {
-            FunnelPiece piece = listFunnel.get(i);
-
-            while (piece.listParticles.size() > particleCount) {
-                piece.listParticles.get(piece.listParticles.size() - 1).setExpired();
-                piece.listParticles.remove(piece.listParticles.size() - 1);
-            }
-        }*/
-        //listFunnel.clear();
-
-
     }
 
     private void tickUpdateFunnel() {
@@ -195,13 +158,8 @@ public class TornadoFunnel {
         Level world = Minecraft.getInstance().level;
         Player player = Minecraft.getInstance().player;
 
-        //for (FunnelPiece piece : listFunnel) {
         for (int ii = 0; ii < listFunnel.size(); ii++) {
             FunnelPiece piece = listFunnel.get(ii);
-
-            /*if (ii == listFunnel.size() - 1) {
-                piece.posEnd = new Vector3d(piece.posStart.x, piece.posStart.y + 20, piece.posStart.z);
-            }*/
 
             double rate = 0.2F/* + (ii * 0.1F)*/;
             double distMax = 5 + (listFunnel.size() - ii);
@@ -209,17 +167,10 @@ public class TornadoFunnel {
             Random rand = new Random();
 
             piece.posEnd.add(new Vector3d(rate * piece.vecDirX, 0, rate * piece.vecDirZ * 0.7));
-            //piece.posEnd = piece.posEnd.add(rate * random.nextFloat() * piece.vecDirX, 0, rate * random.nextFloat() * piece.vecDirZ);
 
             int offset = 360 / listFunnel.size();
             long timeC = (world.getGameTime() * (ii+1) + (offset * ii)) * 1;
             float range = 35F;
-
-            //piece.posEnd = new Vector3d(piece.posStart.x + Math.sin(Math.toRadians(timeC % 360)) * range, piece.posStart.y + 3, piece.posStart.z + Math.cos(Math.toRadians(timeC % 360)) * range);
-
-            //piece.posEnd.
-
-            //piece.posEnd = piece.posEnd.addVector(-1, 0, 0);
 
             float speedAmp = 0.3F;
 
@@ -248,14 +199,6 @@ public class TornadoFunnel {
                     piece.vecDirZ *= (0.5F + rand.nextFloat()) + (ii * speedAmp);
                 }
             }
-
-            /*if (Math.abs(piece.posStart.x - piece.posEnd.x) > distMax) {
-                piece.vecDirX *= -1;
-            }
-
-            if (Math.abs(piece.posStart.z - piece.posEnd.z) > distMax) {
-                piece.vecDirZ *= -1;
-            }*/
 
             if (ii > 0) {
                 Vector3d prev = listFunnel.get(ii-1).posEnd;
@@ -302,7 +245,6 @@ public class TornadoFunnel {
 
                     int testY = 100;
 
-                    //float dist2 = (float)Math.sqrt(player.getDistanceSq(0.5, testY, 0.5));
                     float dist2 = (float)Math.sqrt(distanceTo(piece.posStart, piece.posEnd));
 
                     Vector3f vecDiff = new Vector3f(
@@ -336,9 +278,7 @@ public class TornadoFunnel {
 
                     Quaternionf quatPitch = new Quaternionf(1.0F, 0.0F, 0.0F, Math.toRadians(-pitchAngle));
                     Vector3f vecCurve = piece.bezierCurve.getValue((float)curvePoint);
-                    //Vector3f vecNew = new Vector3f((float)vecCurve.x * curveAmp, 1 + ((float)yDiff) * yDiffDist, (float)vecCurve.z * curveAmp);
                     Vector3f vecNew = new Vector3f((float)vecCurve.x() * curveAmp, 1 + ((float)yDiff) * yDiffDist, (float)vecCurve.z() * curveAmp);
-                    //Vector3f vecNew = new Vector3f((float)0, 1 + ((float)yDiff) * yDiffDist, (float)0);
 
                     float rotAroundPosX = 0;
                     float rotAroundPosY = 0;
@@ -354,9 +294,6 @@ public class TornadoFunnel {
                     rotAroundPosY = vecNew.y();
                     rotAroundPosZ = vecNew.z();
 
-                    //part.setPosition(player.getX() + rotAroundPosX, player.getY() + rotAroundPosY, player.getZ() + rotAroundPosZ);
-                    //part.setPosition(pos.x + rotAroundPosX, pos.y + rotAroundPosY, pos.z + rotAroundPosZ);
-                    //part.setPosition(pos.x + x1, pos.y + y1, pos.z + z1);
                     part.setPosition(piece.posStart.x + rotAroundPosX, piece.posStart.y + rotAroundPosY, piece.posStart.z + rotAroundPosZ);
                 }
 

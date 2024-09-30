@@ -38,8 +38,6 @@ public class WindManager {
 	public int windSpeedGlobalRandChangeDelay = 10;
 
 	//generic?
-	/*public float windSpeedMin = 0.00001F;
-	public float windSpeedMax = 1F;*/
 
 	//events - design derp, we're making this client side, so its set based on closest storm to the client side player
 	public float windAngleEvent = 0;
@@ -53,8 +51,6 @@ public class WindManager {
 	public float windAngleGust = 0;
 	public float windSpeedGust = 0;
 	public int windTimeGust = 0;
-	//public float directionGust = 0;
-	//public float directionBeforeGust = 0;
 	public int windGustEventTimeRand = 60;
 	public float chanceOfWindGustEvent = 0.5F;
 
@@ -238,21 +234,17 @@ public class WindManager {
 
 	public void setWindTimeEvent(int parVal) {
 		windTimeEvent = parVal;
-		//syncData(); - might be too often
-		//Weather.dbg("Wind event time set: " + parVal);
 	}
 
 	public void tick() {
 
 		Random rand = CoroUtilMisc.random();
 
-		//windSpeedGust = 0;
 
 		if (!ConfigWind.Misc_windOn) {
 			windSpeedGlobal = 0;
 			windSpeedGust = 0;
 			windTimeGust = 0;
-			//windSpeedSmooth = 0;
 		} else {
 
 			if (!manager.getWorld().isClientSide()) {
@@ -342,31 +334,15 @@ public class WindManager {
 					windSpeedGlobal = speedOverride;
 				}
 
-				//smooth use
-				/*if (windSpeed > windSpeedSmooth)
-	            {
-					windSpeedSmooth += 0.01F;
-	            }
-	            else if (windSpeed < windSpeedSmooth)
-	            {
-	            	windSpeedSmooth -= 0.01F;
-	            }
-
-	            if (windSpeedSmooth < 0)
-	            {
-	            	windSpeedSmooth = 0F;
-	            }*/
-
 				//WIND SPEED //
 
 				//WIND ANGLE\\
 
-				//windGustEventTimeRand = 100;
 
 				float randGustWindFactor = 1F;
 
 				//gust data
-				if (this.windTimeGust == 0 && lowWindTimer <= 0/* && highWindTimer <= 0*/)
+				if (this.windTimeGust == 0 && lowWindTimer <= 0)
 				{
 					if (chanceOfWindGustEvent > 0F)
 					{
@@ -381,20 +357,12 @@ public class WindManager {
 							}
 
 							setWindTimeGust(rand.nextInt(windGustEventTimeRand * 3));
-							//windEventTime += windTime;
-							//unneeded since priority system determines wind to use
-							//directionBeforeGust = windAngleGlobal;
 						}
 					}
 				}
 
 				//global wind angle
-				//windAngleGlobal += ((new Random()).nextInt(5) - 2) * 0.2F;
 				windAngleGlobal += (rand.nextFloat() * ConfigWind.globalWindAngleChangeAmountRate) - (rand.nextFloat() * ConfigWind.globalWindAngleChangeAmountRate);
-
-				//windAngleGlobal += 0.1;
-
-				//windAngleGlobal = 0;
 
 				if (windAngleGlobal < -180)
 				{
@@ -412,10 +380,6 @@ public class WindManager {
 				tickClient();
 			}
 		}
-
-		/*windSpeedGlobal = 0.9F;
-		windAngleGlobal = 270;*/
-
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -604,11 +568,7 @@ public class WindManager {
 	public Vec3 applyWindForceImpl(Vec3 pos, Vec3 motion, float weight, float multiplier, float maxSpeed, boolean dynamicWind) {
 		float windSpeed = 0;
 		if (pos != null && ConfigWind.Wind_UsePerlinNoise) {
-			/*if (windTimeGust > 0) {
-				windSpeed = getWindSpeedPerlinNoise(pos);
-			} else */{
-				windSpeed = (getWindSpeed(dynamicWind ? CoroUtilBlock.blockPos(pos) : null) * 0.5F) + (getWindSpeedPerlinNoise(pos) * 0.5F);
-			}
+			windSpeed = (getWindSpeed(dynamicWind ? CoroUtilBlock.blockPos(pos) : null) * 0.5F) + (getWindSpeedPerlinNoise(pos) * 0.5F);
 		} else {
 			windSpeed = getWindSpeed(dynamicWind ? CoroUtilBlock.blockPos(pos) : null);
 		}
@@ -660,10 +620,6 @@ public class WindManager {
 		data.putFloat("windSpeedGust", windSpeedGust);
 		data.putFloat("windAngleGust", windAngleGust);
 
-		/*data.putFloat("windSpeedEvent", windSpeedEvent);
-		data.putFloat("windAngleEvent", windAngleEvent);
-		data.putInt("windTimeEvent", windTimeEvent);*/
-
 		data.putInt("windTimeGust", windTimeGust);
 
 		return data;
@@ -675,10 +631,6 @@ public class WindManager {
 		windAngleGlobal = parNBT.getFloat("windAngleGlobal");
 		windSpeedGust = parNBT.getFloat("windSpeedGust");
 		windAngleGust = parNBT.getFloat("windAngleGust");
-
-		/*windSpeedEvent = parNBT.getFloat("windSpeedEvent");
-		windAngleEvent = parNBT.getFloat("windAngleEvent");
-		windTimeEvent = parNBT.getInt("windTimeEvent");*/
 
 		windTimeGust = parNBT.getInt("windTimeGust");
 	}
@@ -737,8 +689,6 @@ public class WindManager {
 
 	public float getWindSpeedPerlinNoise(Vec3 pos) {
 		PerlinNoise perlinNoise = PerlinNoiseHelper.get().getPerlinNoise();
-		/*int indexX = index % xWide;
-		int indexZ = index / xWide;*/
 		int indexX = (int) Math.floor(pos.x);
 		int indexZ = (int) Math.floor(pos.z);
 		double scale = 10;

@@ -29,44 +29,62 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import weather2.ClientTickHandler;
 import weather2.WeatherItems;
 import weather2.item.WeatherItem;
+import weather2.weathersystem.storm.WeatherObject;
 
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+import static weather2.util.WeatherUtilRender.renderRadar;
 
 @Mixin(ItemInHandRenderer.class)
 public abstract class GameRendererOverride {
     private float xOff = 0;
 
+    Random random = new Random();
+
     private static final RenderType MAP_BACKGROUND = RenderType.text(new ResourceLocation("textures/map/map_background.png"));
     private static final RenderType MAP_BACKGROUND_CHECKERBOARD = RenderType.text(new ResourceLocation("textures/map/map_background_checkerboard.png"));
+
     @Shadow
-    private void renderPlayerArm(PoseStack p_109347_, MultiBufferSource p_109348_, int p_109349_, float p_109350_, float p_109351_, HumanoidArm p_109352_) {}
+    private void renderPlayerArm(PoseStack p_109347_, MultiBufferSource p_109348_, int p_109349_, float p_109350_, float p_109351_, HumanoidArm p_109352_) {
+    }
 
     @Shadow
     private ItemStack offHandItem;
 
     @Shadow
-    private void renderTwoHandedMap(PoseStack p_109340_, MultiBufferSource p_109341_, int p_109342_, float p_109343_, float p_109344_, float p_109345_) {}
+    private void renderTwoHandedMap(PoseStack p_109340_, MultiBufferSource p_109341_, int p_109342_, float p_109343_, float p_109344_, float p_109345_) {
+    }
 
     @Shadow
-    private void renderOneHandedMap(PoseStack p_109354_, MultiBufferSource p_109355_, int p_109356_, float p_109357_, HumanoidArm p_109358_, float p_109359_, ItemStack p_109360_) {}
+    private void renderOneHandedMap(PoseStack p_109354_, MultiBufferSource p_109355_, int p_109356_, float p_109357_, HumanoidArm p_109358_, float p_109359_, ItemStack p_109360_) {
+    }
 
     @Shadow
-    private void applyItemArmTransform(PoseStack p_109383_, HumanoidArm p_109384_, float p_109385_) {}
+    private void applyItemArmTransform(PoseStack p_109383_, HumanoidArm p_109384_, float p_109385_) {
+    }
 
     @Shadow
-    private void applyItemArmAttackTransform(PoseStack p_109336_, HumanoidArm p_109337_, float p_109338_) {}
+    private void applyItemArmAttackTransform(PoseStack p_109336_, HumanoidArm p_109337_, float p_109338_) {
+    }
 
     @Shadow
-    public void renderItem(LivingEntity p_270072_, ItemStack p_270793_, ItemDisplayContext p_270837_, boolean p_270203_, PoseStack p_270974_, MultiBufferSource p_270686_, int p_270103_) {}
+    public void renderItem(LivingEntity p_270072_, ItemStack p_270793_, ItemDisplayContext p_270837_, boolean p_270203_, PoseStack p_270974_, MultiBufferSource p_270686_, int p_270103_) {
+    }
 
     @Shadow
-    private void applyEatTransform(PoseStack p_109331_, float p_109332_, HumanoidArm p_109333_, ItemStack p_109334_) {}
+    private void applyEatTransform(PoseStack p_109331_, float p_109332_, HumanoidArm p_109333_, ItemStack p_109334_) {
+    }
 
     @Shadow
-    private void applyBrushTransform(PoseStack p_273513_, float p_273245_, HumanoidArm p_273726_, ItemStack p_272809_, float p_273333_) {}
+    private void applyBrushTransform(PoseStack p_273513_, float p_273245_, HumanoidArm p_273726_, ItemStack p_272809_, float p_273333_) {
+    }
 
 
     @Inject(method = "renderArmWithItem", cancellable = true, at = @At("HEAD"))
@@ -92,12 +110,12 @@ public abstract class GameRendererOverride {
                 int i = flag2 ? 1 : -1;
                 if (p_109372_.isUsingItem() && p_109372_.getUseItemRemainingTicks() > 0 && p_109372_.getUsedItemHand() == p_109375_) {
                     this.applyItemArmTransform(p_109379_, humanoidarm, p_109378_);
-                    p_109379_.translate((float)i * -0.4785682F, -0.094387F, 0.05731531F);
+                    p_109379_.translate((float) i * -0.4785682F, -0.094387F, 0.05731531F);
                     p_109379_.mulPose(Axis.XP.rotationDegrees(-11.935F));
-                    p_109379_.mulPose(Axis.YP.rotationDegrees((float)i * 65.3F));
-                    p_109379_.mulPose(Axis.ZP.rotationDegrees((float)i * -9.785F));
-                    float f9 = (float)p_109377_.getUseDuration() - ((float)Minecraft.getInstance().player.getUseItemRemainingTicks() - p_109373_ + 1.0F);
-                    float f13 = f9 / (float)CrossbowItem.getChargeDuration(p_109377_);
+                    p_109379_.mulPose(Axis.YP.rotationDegrees((float) i * 65.3F));
+                    p_109379_.mulPose(Axis.ZP.rotationDegrees((float) i * -9.785F));
+                    float f9 = (float) p_109377_.getUseDuration() - ((float) Minecraft.getInstance().player.getUseItemRemainingTicks() - p_109373_ + 1.0F);
+                    float f13 = f9 / (float) CrossbowItem.getChargeDuration(p_109377_);
                     if (f13 > 1.0F) {
                         f13 = 1.0F;
                     }
@@ -111,17 +129,17 @@ public abstract class GameRendererOverride {
 
                     p_109379_.translate(f13 * 0.0F, f13 * 0.0F, f13 * 0.04F);
                     p_109379_.scale(1.0F, 1.0F, 1.0F + f13 * 0.2F);
-                    p_109379_.mulPose(Axis.YN.rotationDegrees((float)i * 45.0F));
+                    p_109379_.mulPose(Axis.YN.rotationDegrees((float) i * 45.0F));
                 } else {
-                    float f = -0.4F * Mth.sin(Mth.sqrt(p_109376_) * (float)Math.PI);
-                    float f1 = 0.2F * Mth.sin(Mth.sqrt(p_109376_) * ((float)Math.PI * 2F));
-                    float f2 = -0.2F * Mth.sin(p_109376_ * (float)Math.PI);
-                    p_109379_.translate((float)i * f, f1, f2);
+                    float f = -0.4F * Mth.sin(Mth.sqrt(p_109376_) * (float) Math.PI);
+                    float f1 = 0.2F * Mth.sin(Mth.sqrt(p_109376_) * ((float) Math.PI * 2F));
+                    float f2 = -0.2F * Mth.sin(p_109376_ * (float) Math.PI);
+                    p_109379_.translate((float) i * f, f1, f2);
                     this.applyItemArmTransform(p_109379_, humanoidarm, p_109378_);
                     this.applyItemArmAttackTransform(p_109379_, humanoidarm, p_109376_);
                     if (flag1 && p_109376_ < 0.001F && flag) {
-                        p_109379_.translate((float)i * -0.641864F, 0.0F, 0.0F);
-                        p_109379_.mulPose(Axis.YP.rotationDegrees((float)i * 10.0F));
+                        p_109379_.translate((float) i * -0.641864F, 0.0F, 0.0F);
+                        p_109379_.mulPose(Axis.YP.rotationDegrees((float) i * 10.0F));
                     }
                 }
 
@@ -145,11 +163,11 @@ public abstract class GameRendererOverride {
                                 break;
                             case BOW:
                                 this.applyItemArmTransform(p_109379_, humanoidarm, p_109378_);
-                                p_109379_.translate((float)k * -0.2785682F, 0.18344387F, 0.15731531F);
+                                p_109379_.translate((float) k * -0.2785682F, 0.18344387F, 0.15731531F);
                                 p_109379_.mulPose(Axis.XP.rotationDegrees(-13.935F));
-                                p_109379_.mulPose(Axis.YP.rotationDegrees((float)k * 35.3F));
-                                p_109379_.mulPose(Axis.ZP.rotationDegrees((float)k * -9.785F));
-                                float f8 = (float)p_109377_.getUseDuration() - ((float)Minecraft.getInstance().player.getUseItemRemainingTicks() - p_109373_ + 1.0F);
+                                p_109379_.mulPose(Axis.YP.rotationDegrees((float) k * 35.3F));
+                                p_109379_.mulPose(Axis.ZP.rotationDegrees((float) k * -9.785F));
+                                float f8 = (float) p_109377_.getUseDuration() - ((float) Minecraft.getInstance().player.getUseItemRemainingTicks() - p_109373_ + 1.0F);
                                 float f12 = f8 / 20.0F;
                                 f12 = (f12 * f12 + f12 * 2.0F) / 3.0F;
                                 if (f12 > 1.0F) {
@@ -165,15 +183,15 @@ public abstract class GameRendererOverride {
 
                                 p_109379_.translate(f12 * 0.0F, f12 * 0.0F, f12 * 0.04F);
                                 p_109379_.scale(1.0F, 1.0F, 1.0F + f12 * 0.2F);
-                                p_109379_.mulPose(Axis.YN.rotationDegrees((float)k * 45.0F));
+                                p_109379_.mulPose(Axis.YN.rotationDegrees((float) k * 45.0F));
                                 break;
                             case SPEAR:
                                 this.applyItemArmTransform(p_109379_, humanoidarm, p_109378_);
-                                p_109379_.translate((float)k * -0.5F, 0.7F, 0.1F);
+                                p_109379_.translate((float) k * -0.5F, 0.7F, 0.1F);
                                 p_109379_.mulPose(Axis.XP.rotationDegrees(-55.0F));
-                                p_109379_.mulPose(Axis.YP.rotationDegrees((float)k * 35.3F));
-                                p_109379_.mulPose(Axis.ZP.rotationDegrees((float)k * -9.785F));
-                                float f7 = (float)p_109377_.getUseDuration() - ((float)Minecraft.getInstance().player.getUseItemRemainingTicks() - p_109373_ + 1.0F);
+                                p_109379_.mulPose(Axis.YP.rotationDegrees((float) k * 35.3F));
+                                p_109379_.mulPose(Axis.ZP.rotationDegrees((float) k * -9.785F));
+                                float f7 = (float) p_109377_.getUseDuration() - ((float) Minecraft.getInstance().player.getUseItemRemainingTicks() - p_109373_ + 1.0F);
                                 float f11 = f7 / 10.0F;
                                 if (f11 > 1.0F) {
                                     f11 = 1.0F;
@@ -188,7 +206,7 @@ public abstract class GameRendererOverride {
 
                                 p_109379_.translate(0.0F, 0.0F, f11 * 0.2F);
                                 p_109379_.scale(1.0F, 1.0F, 1.0F + f11 * 0.2F);
-                                p_109379_.mulPose(Axis.YN.rotationDegrees((float)k * 45.0F));
+                                p_109379_.mulPose(Axis.YN.rotationDegrees((float) k * 45.0F));
                                 break;
                             case BRUSH:
                                 this.applyBrushTransform(p_109379_, p_109373_, humanoidarm, p_109377_, p_109378_);
@@ -196,15 +214,15 @@ public abstract class GameRendererOverride {
                     } else if (p_109372_.isAutoSpinAttack()) {
                         this.applyItemArmTransform(p_109379_, humanoidarm, p_109378_);
                         int j = flag3 ? 1 : -1;
-                        p_109379_.translate((float)j * -0.4F, 0.8F, 0.3F);
-                        p_109379_.mulPose(Axis.YP.rotationDegrees((float)j * 65.0F));
-                        p_109379_.mulPose(Axis.ZP.rotationDegrees((float)j * -85.0F));
+                        p_109379_.translate((float) j * -0.4F, 0.8F, 0.3F);
+                        p_109379_.mulPose(Axis.YP.rotationDegrees((float) j * 65.0F));
+                        p_109379_.mulPose(Axis.ZP.rotationDegrees((float) j * -85.0F));
                     } else {
-                        float f5 = -0.4F * Mth.sin(Mth.sqrt(p_109376_) * (float)Math.PI);
-                        float f6 = 0.2F * Mth.sin(Mth.sqrt(p_109376_) * ((float)Math.PI * 2F));
-                        float f10 = -0.2F * Mth.sin(p_109376_ * (float)Math.PI);
+                        float f5 = -0.4F * Mth.sin(Mth.sqrt(p_109376_) * (float) Math.PI);
+                        float f6 = 0.2F * Mth.sin(Mth.sqrt(p_109376_) * ((float) Math.PI * 2F));
+                        float f10 = -0.2F * Mth.sin(p_109376_ * (float) Math.PI);
                         int l = flag3 ? 1 : -1;
-                        p_109379_.translate((float)l * f5, f6, f10);
+                        p_109379_.translate((float) l * f5, f6, f10);
                         this.applyItemArmTransform(p_109379_, humanoidarm, p_109378_);
                         this.applyItemArmAttackTransform(p_109379_, humanoidarm, p_109376_);
                     }
@@ -241,100 +259,4 @@ public abstract class GameRendererOverride {
         }
 
     }
-
-    public void renderRadar(PoseStack p_109367_, MultiBufferSource p_109368_, int p_109369_, ItemStack p_109370_, CallbackInfo ci, Matrix4f matrix4f) {
-        // Obtain the map's saved data
-        Integer mapId = MapItem.getMapId(p_109370_);
-        System.out.println(mapId);
-        MapItemSavedData mapData = Minecraft.getInstance().level.getMapData("map_" + mapId);
-
-
-        if (mapData == null) {
-            return; // No map data, so we can't render anything
-        }
-
-        // Get the map's scaling and center position
-        int scale = 1 << mapData.scale; // The scale factor (2^scale)
-        double centerX = mapData.centerX; // X coordinate of the map's center in the world
-        double centerY = mapData.centerZ; // Z coordinate of the map's center in the world
-
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal("CenterX: " + centerX));
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal("SavedData: " + centerY));
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal(" "));
-
-        // Real-world block coordinates (0,0) to (50,50)
-        double realBlockX1 = 0.0;
-        double realBlockY1 = 0.0;
-        double realBlockX2 = 50.0;
-        double realBlockY2 = 50.0;
-
-        // Convert real block coordinates to map coordinates relative to the map center
-        double mapX1 = (realBlockX1 - centerX) / scale + 64.0; // Map is centered at (64,64) on the GUI
-        double mapY1 = (realBlockY1 - centerY) / scale + 64.0;
-        double mapX2 = (realBlockX2 - centerX) / scale + 64.0;
-        double mapY2 = (realBlockY2 - centerY) / scale + 64.0;
-
-        // Z-level for rendering (slightly above the map background)
-        float z = -0.015F;
-
-        // RGBA color (red, semi-transparent)
-        int red = 255;
-        int green = 0;
-        int blue = 0;
-        int alpha = 128;
-
-        // Call renderRectangle to draw the rectangle with clipping
-        renderRectangle(p_109367_, p_109368_, p_109369_, matrix4f, (float)mapX1, (float)mapY1, (float)mapX2, (float)mapY2, z, red, green, blue, alpha);
-    }
-
-    public void renderRectangle(PoseStack p_109367_, MultiBufferSource p_109368_, int p_109369_, Matrix4f matrix4f,
-                                float x1, float y1, float x2, float y2, float z,
-                                int red, int green, int blue, int alpha) {
-        // Map boundaries for clipping
-//        float mapMinX = 0.0F;
-//        float mapMaxX = 128.0F;
-//        float mapMinY = 0.0F;
-//        float mapMaxY = 128.0F;
-
-        float mapMinX = -1000.0F;
-        float mapMaxX = 1280.0F;
-        float mapMinY = -1000.0F;
-        float mapMaxY = 1280.0F;
-
-        // Clip the rectangle coordinates to the map boundaries
-        float xMin = Math.max(x1, mapMinX);
-        float xMax = Math.min(x2, mapMaxX);
-        float yMin = Math.max(y1, mapMinY);
-        float yMax = Math.min(y2, mapMaxY);
-
-        // Check if there is an intersection (i.e., the rectangle is within the map boundaries)
-        if (xMin < xMax && yMin < yMax) {
-            // Use the same RenderType as the map background for consistency
-            VertexConsumer rectangleVertexConsumer = p_109368_.getBuffer(RenderType.gui());
-
-            // Draw the rectangle (clipped to map boundaries)
-            rectangleVertexConsumer.vertex(matrix4f, xMin, yMax, z)
-                    .color(red, green, blue, alpha)
-                    .uv(0.0F, 1.0F)
-                    .uv2(p_109369_)
-                    .endVertex();
-            rectangleVertexConsumer.vertex(matrix4f, xMax, yMax, z)
-                    .color(red, green, blue, alpha)
-                    .uv(1.0F, 1.0F)
-                    .uv2(p_109369_)
-                    .endVertex();
-            rectangleVertexConsumer.vertex(matrix4f, xMax, yMin, z)
-                    .color(red, green, blue, alpha)
-                    .uv(1.0F, 0.0F)
-                    .uv2(p_109369_)
-                    .endVertex();
-            rectangleVertexConsumer.vertex(matrix4f, xMin, yMin, z)
-                    .color(red, green, blue, alpha)
-                    .uv(0.0F, 0.0F)
-                    .uv2(p_109369_)
-                    .endVertex();
-        }
-    }
-
-
 }

@@ -71,7 +71,6 @@ public class WeatherObjectParticleStorm extends WeatherObject {
 	}
 
 	public static boolean isColdForStorm(Level world, Holder<Biome> biome, boolean forSpawn, BlockPos pos) {
-		//return biome.getPrecipitation() == Biome.Precipitation.SNOW;
 		//adjusted to this way to make it work with serene seasons
 		boolean canPrecip = biome.get().getPrecipitationAt(pos) == Biome.Precipitation.RAIN || biome.get().getPrecipitationAt(pos) == Biome.Precipitation.SNOW;
 		return canPrecip && CoroUtilCompatibility.coldEnoughToSnow(biome.get(), pos, world);
@@ -80,19 +79,13 @@ public class WeatherObjectParticleStorm extends WeatherObject {
 	public static boolean isDesert(Holder<Biome> biome, boolean forSpawn) {
 		return biome.get().equals(Biomes.DESERT) || (!forSpawn && biome.get().equals(Biomes.RIVER)) || biome.unwrap().left().toString().toLowerCase().contains("desert");
 	}
-//
-//	@Override
-//	public int getSize() {
-//		return 250;
-//	}
-	
+
 	@Override
 	public void tick() {
 		super.tick();
 
 		if (!manager.getWorld().isClientSide()) {
 			this.age++;
-			//CULog.dbg("this.age: " + this.age);
 			if (this.age > this.maxAge) {
 				this.remove();
 			}
@@ -157,8 +150,6 @@ public class WeatherObjectParticleStorm extends WeatherObject {
 			buildupOutsideArea = ConfigSnow.Snowstorm_Snow_Buildup_AllowOutsideColdBiomes;
 			maxBlockStackingAllowed = ConfigSnow.Snowstorm_Snow_Block_Max_Height;
 		}
-
-		//delay = 1;
 
 		//sand block buildup
 		if (!world.isClientSide) {

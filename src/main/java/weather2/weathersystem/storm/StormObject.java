@@ -1093,7 +1093,8 @@ public class StormObject extends WeatherObject {
 				BlockPos posBP = CoroUtilBlock.blockPos(posGround.x, posGround.y, posGround.z);
 //				List<LivingEntity> listEnts = manager.getWorld().getEntitiesOfClass(LivingEntity.class, new AABB(posBP).inflate(size));
 				Set<LivingEntity> listEnts = new HashSet<>();
-				for (Rectangle2D rectangle2D : collider) {
+				for (CloudDefinition cloud : bounds) {
+					Rectangle2D rectangle2D = cloud.bounds;
 					List<LivingEntity> listCurrent = manager.getWorld().getEntitiesOfClass(LivingEntity.class, new AABB(rectangle2D.getMinX() + pos.x, 0, rectangle2D.getMinY() + pos.z, rectangle2D.getMaxX() + pos.x, pos.y, rectangle2D.getMaxY() + pos.z));
 					for (LivingEntity livingEntity : listCurrent) {
 						listEnts.add(livingEntity);
@@ -1144,8 +1145,7 @@ public class StormObject extends WeatherObject {
 		int randomChanceOfWaterBuildFromNothing = ConfigStorm.Storm_Rain_WaterBuildUpOddsTo1FromNothing;
 		int randomChanceOfWaterBuildFromOvercastRaining = ConfigStorm.Storm_Rain_WaterBuildUpOddsTo1FromOvercastRaining;
 		randomChanceOfWaterBuildFromOvercastRaining = 10;
-		//int randomChanceOfRain = ConfigMisc.Player_Storm_Rain_OddsTo1;
-		
+
 		boolean isInOcean = false;
 		boolean isOverWater = false;
 		boolean tryFormStorm = false;
@@ -1851,7 +1851,8 @@ public class StormObject extends WeatherObject {
 					listParticlesCloud.add(particle);
 				}*/
 				double totalArea = 0;
-				for (Rectangle2D rect : collider) {
+				for (CloudDefinition cloud : bounds) {
+					Rectangle2D rect = cloud.bounds;
 					totalArea += rect.getWidth() * rect.getHeight();
 				}
 

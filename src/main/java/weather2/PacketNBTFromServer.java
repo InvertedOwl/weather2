@@ -23,12 +23,6 @@ public class PacketNBTFromServer {
 
     public static class Handler {
         public static void handle(final PacketNBTFromServer msg, Supplier<NetworkEvent.Context> ctx) {
-            /*ServerPlayerEntity playerEntity = ctx.get().getSender();
-            if( playerEntity == null ) {
-                ctx.get().setPacketHandled(true);
-                return;
-            }*/
-
             ctx.get().enqueueWork(() -> {
                 try {
                     CompoundTag nbt = msg.nbt;
@@ -36,7 +30,6 @@ public class PacketNBTFromServer {
                     String packetCommand = nbt.getString("packetCommand");
                     String command = nbt.getString("command");
 
-                    //System.out.println("Weather2 packet command from server: " + packetCommand);
                     if (packetCommand.equals("WeatherData")) {
                         ClientTickHandler.getClientWeather();
 

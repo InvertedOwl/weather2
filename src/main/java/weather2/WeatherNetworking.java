@@ -36,6 +36,5 @@ public class WeatherNetworking {
         if (lastID > 0xFF)
             throw new RuntimeException("Too many messages!");
     }
-
 }
 

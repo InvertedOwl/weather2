@@ -128,11 +128,6 @@ public class LightningBoltWeather extends Entity {
          } else if (!this.visualOnly) {
             List<Entity> list1 = this.level().getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), Entity::isAlive);
 
-            /*for(Entity entity : list1) {
-               if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, this))
-               entity.thunderHit((ServerLevel)this.level, this);
-            }*/
-
             this.hitEntities.addAll(list1);
             if (this.cause != null) {
                CriteriaTriggers.CHANNELED_LIGHTNING.trigger(this.cause, list1);

@@ -26,17 +26,13 @@ public class WeatherBlocks {
     public static final String DEFLECTOR = "weather_deflector";
     public static final String TORNADO_SENSOR = "tornado_sensor";
     public static final String TORNADO_SIREN = "tornado_siren";
-    public static final String WEATHER_MACHINE = "weather_machine";
 
     public static final String WEATHER_FORECAST = "weather_forecast";
     public static final String WIND_VANE = "wind_vane";
     public static final String ANEMOMETER = "anemometer";
-    public static final String TORNADO_SIREN_MANUAL = "tornado_siren_manual";
 
-    public static final String SAND_LAYER_PLACEABLE = "sand_layer_placeable";
     public static final String WEATHER_ITEM = "weather_item";
     public static final String RADAR_MAP = "radar_map";
-    public static final String POCKET_SAND = "pocket_sand";
     public static final String WIND_TURBINE = "wind_turbine";
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Weather.MODID);

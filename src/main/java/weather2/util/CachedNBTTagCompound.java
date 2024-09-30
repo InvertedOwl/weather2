@@ -3,6 +3,8 @@ package weather2.util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import weather2.weathersystem.storm.CloudDefinition;
+
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -194,5 +196,57 @@ public class CachedNBTTagCompound {
 
 	public void updateCacheFromNew() {
 		this.cachedData = this.newData;
+	}
+
+	/**
+	 * Saves a list of CloudDefinition objects to the NBT.
+	 */
+	public void putCloudDefinitionList(String key, List<CloudDefinition> clouds) {
+		ListTag listTag = new ListTag();
+		for (CloudDefinition cloud : clouds) {
+			CompoundTag cloudTag = new CompoundTag();
+
+			// Save the Rectangle2D part
+			cloudTag.putDouble("x", cloud.bounds.getX());
+			cloudTag.putDouble("y", cloud.bounds.getY());
+			cloudTag.putDouble("width", cloud.bounds.getWidth());
+			cloudTag.putDouble("height", cloud.bounds.getHeight());
+
+			// Save the intensity part
+			cloudTag.putInt("intensity", cloud.intensity);
+
+			listTag.add(cloudTag);
+		}
+		newData.put(key, listTag);
+		cachedData.put(key, listTag);
+	}
+
+	/**
+	 * Reads a list of CloudDefinition objects from the NBT.
+	 */
+	public List<CloudDefinition> getCloudDefinitionList(String key) {
+		List<CloudDefinition> clouds = new ArrayList<>();
+		if (!newData.contains(key)) {
+			return clouds; // Return empty list if key not found
+		}
+
+		ListTag listTag = newData.getList(key, Tag.TAG_COMPOUND);
+		for (int i = 0; i < listTag.size(); i++) {
+			CompoundTag cloudTag = listTag.getCompound(i);
+
+			// Read the Rectangle2D part
+			double x = cloudTag.getDouble("x");
+			double y = cloudTag.getDouble("y");
+			double width = cloudTag.getDouble("width");
+			double height = cloudTag.getDouble("height");
+			Rectangle2D bounds = new Rectangle2D.Double(x, y, width, height);
+
+			// Read the intensity part
+			int intensity = cloudTag.getInt("intensity");
+
+			clouds.add(new CloudDefinition(bounds, intensity));
+		}
+
+		return clouds;
 	}
 }

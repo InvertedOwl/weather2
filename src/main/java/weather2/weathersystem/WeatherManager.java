@@ -127,9 +127,6 @@ public abstract class WeatherManager implements IWorldData {
 		lookupStormObjectsByID.clear();
 
 		wind.reset();
-
-		//do not reset this, its static (shared between client and server) and client side calls reset()
-		//WeatherObject.lastUsedStormID = 0;
 	}
 
 	public void tickRender(float partialTick) {
@@ -172,8 +169,6 @@ public abstract class WeatherManager implements IWorldData {
 			}
 		} else {
 			Weather.dbg("Weather2 WARNING!!! Received new storm create for an ID that is already active! design bug or edgecase with PlayerEvent.Clone, ID: " + so.ID);
-			//Weather.dbgStackTrace();
-
 		}
 	}
 
@@ -225,14 +220,6 @@ public abstract class WeatherManager implements IWorldData {
 		}
 
 		return closestStorm;
-
-		//not sure i can avoid a double use of distance calculation adding to iteration cost, this method might not be stream worthy
-		/*return getStormObjects().stream()
-				.map(wo -> (StormObject)wo)
-				.filter(so -> !so.isDead)
-				.filter(so -> (so.attrib_precipitation && orRain) || (severityFlagMin == -1 || so.levelCurIntensityStage >= severityFlagMin))
-				.filter(so -> so.pos.distanceTo(parPos) < maxDist)
-				.min(Comparator.comparing(so -> so.pos.distanceTo(parPos))).orElse(null);*/
 	}
 
 	public boolean isPrecipitatingAt(BlockPos pos) {
@@ -245,25 +232,9 @@ public abstract class WeatherManager implements IWorldData {
 	 * @param parPos
 	 * @return
 	 */
+
+	// TODO: Redo with new precip model
 	public boolean isPrecipitatingAt(Vec3 parPos) {
-		/*List<WeatherObject> listStorms = getStormObjects();
-
-		for (int i = 0; i < listStorms.size(); i++) {
-			WeatherObject wo = listStorms.get(i);
-			if (wo instanceof StormObject) {
-				StormObject storm = (StormObject) wo;
-				if (storm == null || storm.isDead) continue;
-				if (storm.attrib_precipitation) {
-					double dist = storm.pos.distanceTo(parPos);
-					if (dist < storm.size) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;*/
-
 		return getStormObjects().stream()
 				.map(wo -> (StormObject)wo)
 				.anyMatch(so -> !so.isDead && so.attrib_precipitation && so.distanceToEdge(parPos) < 0);
@@ -289,14 +260,9 @@ public abstract class WeatherManager implements IWorldData {
 				WeatherObjectSandstormOld storm = (WeatherObjectSandstormOld) wo;
 				if (storm == null || storm.isDead) continue;
 				double dist = storm.pos.distanceTo(parPos);
-				/*if (getWorld().isRemote) {
-					System.out.println("close storm candidate: " + dist + " - " + storm.state + " - " + storm.attrib_rain);
-				}*/
 				if (dist < closestDist && dist <= maxDist) {
-					//if ((storm.attrib_precipitation && orRain) || (severityFlagMin == -1 || storm.levelCurIntensityStage >= severityFlagMin)) {
 					closestStorm = storm;
 					closestDist = dist;
-					//}
 				}
 			}
 
@@ -434,7 +400,6 @@ public abstract class WeatherManager implements IWorldData {
 			String tagName = (String) it.next();
 			CompoundTag stormData = nbtStorms.getCompound(tagName);
 
-			//if (ServerTickHandler.getWeatherManagerFor(dimension) != null) {
 				WeatherObject wo = null;
 				if (stormData.getInt("weatherObjectType") == EnumWeatherObjectType.CLOUD.ordinal()) {
 					wo = new StormObject(this);
@@ -458,9 +423,6 @@ public abstract class WeatherManager implements IWorldData {
 
 				//TODO: possibly unneeded/redundant/bug inducing, packets will be sent upon request from client
 				((WeatherManagerServer)(this)).syncStormNew(wo);
-			/*} else {
-				System.out.println("WARNING: trying to load storm objects for missing dimension: " + dimension);
-			}*/
 		}
 
 		CompoundTag nbtDeflectors = data.getCompound("deflectorData");

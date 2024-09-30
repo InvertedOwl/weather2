@@ -66,8 +66,6 @@ public class Weather
     public static List<IConfigCategory> listConfigs = new ArrayList<>();
     public static ConfigMisc configMisc = null;
 
-    //public static final CreativeModeTab CREATIVE_TAB = new WeatherTab();
-
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final RegistryObject<CreativeModeTab> WEATHER_TAB = CREATIVE_MODE_TABS.register("weather_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.COMBAT)
@@ -84,7 +82,6 @@ public class Weather
                 output.accept(WeatherItems.BLOCK_ANEMOMETER_ITEM.get());
                 output.accept(WeatherItems.BLOCK_WIND_VANE_ITEM.get());
                 output.accept(WeatherItems.BLOCK_WIND_TURBINE_ITEM.get());
-//                output.accept(WeatherItems.RADAR_MAP.get());
             }).build());
 
     public Weather() {
@@ -120,8 +117,6 @@ public class Weather
         ConfigMod.addConfigFile(MODID, addConfig(new ConfigParticle()));
         ConfigMod.addConfigFile(MODID, addConfig(new ConfigDebug()));
         ConfigMod.addConfigFile(MODID, addConfig(new ConfigSound()));
-        //ConfigMod.addConfigFile(MODID, addConfig(new ConfigFoliage()));
-        //WeatherUtilConfig.nbtLoadDataAll();
 
         SoundRegistry.init();
 
@@ -160,8 +155,6 @@ public class Weather
 
     @SubscribeEvent
     public void serverStart(ServerStartedEvent event) {
-        //initProperNeededForWorld = true;
-        //WeatherUtil.testAllBlocks();
     }
 
     @SubscribeEvent

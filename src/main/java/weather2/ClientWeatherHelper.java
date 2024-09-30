@@ -57,6 +57,8 @@ public final class ClientWeatherHelper {
 	 * @param forOvercast
 	 * @return
 	 */
+	// TODO: Edit this so that it grabs the correct precip strength
+	// TODO: for now just proportional to the storms strength (I know this isn't necessarily true, but for simplicity its fine)
 	public float getPrecipitationStrength(Player entP, boolean forOvercast) {
 
 		if (entP == null) return 0;
@@ -73,8 +75,6 @@ public final class ClientWeatherHelper {
 		float tempAdj = 1F;
 
 		float overcastModeMinPrecip = 0.23F;
-		//overcastModeMinPrecip = 0.16F;
-		//overcastModeMinPrecip = (float) ConfigStorm.Storm_Rain_Overcast_Amount;
 		overcastModeMinPrecip = ClientTickHandler.weatherManager.vanillaRainAmountOnServer;
 
 		//evaluate if storms size is big enough to be over player
@@ -93,9 +93,8 @@ public final class ClientWeatherHelper {
 //			double stormIntensity = (sizeToUse - stormDist) / sizeToUse;
 
 			//why is this not a -1 or 1 anymore?!
-			//tempAdj = storm.levelTemperature/* > 0 ? 1F : -1F*/;
 
-			tempAdj = 1F;//storm.levelTemperature/* > 0 ? 1F : -1F*/;
+			tempAdj = 1F;
 
 			//limit plain rain clouds to light intensity
 			if (storm.levelCurIntensityStage == StormObject.STATE_NORMAL) {
@@ -164,7 +163,6 @@ public final class ClientWeatherHelper {
 		float visualDarknessAmplifier = 0.5F;
 		//using 1F to make shaders happy
 		visualDarknessAmplifier = 1F;
-		//CULog.dbg("rainAmount: " + rainAmount);
 		if (!ConfigMisc.Aesthetic_Only_Mode) {
 			if (precipitating) {
 				mc.level.getLevelData().setRaining(rainAmount > 0);
@@ -188,11 +186,6 @@ public final class ClientWeatherHelper {
 				}
 			}
 		}
-
-		//TESTING
-		/*mc.level.getLevelData().setRaining(true);
-		mc.level.setRainLevel(1);
-		mc.level.setThunderLevel(1);*/
 	}
 
 	public void tickRainRates() {

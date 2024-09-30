@@ -50,17 +50,6 @@ public class PacketNBTFromClient {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                /*ItemStack heldItem = GadgetCopyPaste.getGadget(playerEntity);
-                if (heldItem.isEmpty()) return;
-
-                BlockPos startPos = msg.start;
-                BlockPos endPos = msg.end;
-                if (startPos.equals(BlockPos.ZERO) && endPos.equals(BlockPos.ZERO)) {
-                    GadgetCopyPaste.setSelectedRegion(heldItem, null);
-                    playerEntity.sendStatusMessage(MessageTranslation.AREA_RESET.componentTranslation().setStyle(Styles.AQUA), true);
-                } else {
-                    GadgetCopyPaste.setSelectedRegion(heldItem, new Region(startPos, endPos));
-                }*/
             });
 
             ctx.get().setPacketHandled(true);

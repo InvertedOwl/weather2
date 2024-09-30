@@ -88,11 +88,10 @@ public class ClientTickHandler
 			float windDir = WindReader.getWindAngle(world);
 			float windSpeed = WindReader.getWindSpeed(world, mc.player != null ? mc.player.blockPosition() : null);
 
-			//windDir = 0;
 			//TODO: ???????????? what is all this even affecting now
 			float diff = Math.abs(windDir - smoothAngle)/* - 180*/;
 
-			if (true && diff > 10/* && (smoothAngle > windDir - give || smoothAngle < windDir + give)*/) {
+			if (true && diff > 10) {
 
 				if (smoothAngle > 180) smoothAngle -= 360;
 				if (smoothAngle < -180) smoothAngle += 360;
@@ -168,11 +167,9 @@ public class ClientTickHandler
 			particleManagerExtended.setLevel((ClientLevel) world);
 		}
 
-		//((IReloadableResourceManager)mc.getResourceManager()).addReloadListener(particleManagerExtended);
 		CompoundTag data = new CompoundTag();
 		data.putString("command", "syncFull");
 		data.putString("packetCommand", "WeatherData");
-		//Weather.eventChannel.sendToServer(PacketHelper.getNBTPacket(data, Weather.eventChannelName));
 		WeatherNetworking.HANDLER.sendTo(new PacketNBTFromClient(data), mc.player.connection.getConnection(), NetworkDirection.PLAY_TO_SERVER);
     }
 

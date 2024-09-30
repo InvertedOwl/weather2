@@ -87,13 +87,11 @@ public class FogAdjuster {
 
         boolean fogDisco = false;
         if (fogDisco) {
-            //if (lastWeatherType != null) {
-                if (randDelay <= 0) {
-                    Random rand = new Random();
-                    randDelay = 20 + rand.nextInt(5);
-                    startRandom();
-                }
-            //}
+            if (randDelay <= 0) {
+                Random rand = new Random();
+                randDelay = 20 + rand.nextInt(5);
+                startRandom();
+            }
 
             randDelay--;
         }
@@ -104,10 +102,6 @@ public class FogAdjuster {
             boolean isPlayerOutside = WeatherUtilEntity.isEntityOutside(player);
             boolean playerOutside = isPlayerOutside || player.isInWater();
             boolean setFogFar = !playerOutside || player.isSpectator();
-            /*CULog.dbg("set to far mode?: " + setFogFar);
-            CULog.dbg("playerOutside: " + SceneEnhancer.isPlayerOutside);
-            CULog.dbg("isInWater: " + player.isInWater());
-            CULog.dbg("setFogFar: " + setFogFar);*/
             if (player != null) {
                 if ((setFogFar && !useFarFog) || !setFogFar && useFarFog) {
                     initProfiles(setFogFar);
@@ -134,8 +128,6 @@ public class FogAdjuster {
             activeProfile.setFogEndSky(activeProfile.getFogEndSky() + activeProfileLerps.getFogEndSky());
 
             lerpTicksCur++;
-
-            //System.out.println(lerpTicksCur + " - " + activeProfile.getFogStart() + " - " + activeProfile.getFogEnd());
         }
     }
 
@@ -195,28 +187,24 @@ public class FogAdjuster {
 
     public void startHeatwave() {
         CULog.dbg("startHeatwave");
-        //activeProfile = targetProfile;
         targetProfile = new FogProfile(fogHeatwave);
         setupNewLerpRates();
     }
 
     public void startSandstorm() {
         CULog.dbg("startSandstorm");
-        //activeProfile = targetProfile;
         targetProfile = new FogProfile(fogSandstorm);
         setupNewLerpRates();
     }
 
     public void startSnowstorm() {
         CULog.dbg("startSnowstorm");
-        //activeProfile = targetProfile;
         targetProfile = new FogProfile(fogSnowstorm);
         setupNewLerpRates();
     }
 
     public void restoreVanilla() {
         CULog.dbg("restoreVanilla");
-        //activeProfile = targetProfile;
         targetProfile = new FogProfile(fogVanilla);
         setupNewLerpRates();
     }
