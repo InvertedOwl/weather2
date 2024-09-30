@@ -51,7 +51,7 @@ public class WeatherObject {
 		int currentIntensity = 10;
 		while (currentIntensity < maxIntensity) {
 			// Decreasing size for each consecutive intensity level
-			int size = (maxIntensity/random.nextInt(currentIntensity)) * 10;
+			int size = (maxIntensity/(random.nextInt(currentIntensity) + 1)) * 10;
 
 			// Offset by a small x and y, not usually enough to leave the last cloud, but I suppose its possible
 			int x = -size/2 + (random.nextInt(size/2)-size/4);
