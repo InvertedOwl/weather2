@@ -245,7 +245,9 @@ public abstract class GameRendererOverride {
     public void renderRadar(PoseStack p_109367_, MultiBufferSource p_109368_, int p_109369_, ItemStack p_109370_, CallbackInfo ci, Matrix4f matrix4f) {
         // Obtain the map's saved data
         Integer mapId = MapItem.getMapId(p_109370_);
-        MapItemSavedData mapData = MapItem.getSavedData(mapId, Minecraft.getInstance().level);
+        System.out.println(mapId);
+        MapItemSavedData mapData = Minecraft.getInstance().level.getMapData("map_" + mapId);
+
 
         if (mapData == null) {
             return; // No map data, so we can't render anything
@@ -257,7 +259,7 @@ public abstract class GameRendererOverride {
         double centerY = mapData.centerZ; // Z coordinate of the map's center in the world
 
         Minecraft.getInstance().player.sendSystemMessage(Component.literal("CenterX: " + centerX));
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal("CenterY: " + centerY));
+        Minecraft.getInstance().player.sendSystemMessage(Component.literal("SavedData: " + centerY));
         Minecraft.getInstance().player.sendSystemMessage(Component.literal(" "));
 
         // Real-world block coordinates (0,0) to (50,50)
