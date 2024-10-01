@@ -15,6 +15,7 @@ import weather2.config.ConfigSand;
 import weather2.config.ConfigSound;
 import weather2.util.WeatherUtilSound;
 import weather2.weathersystem.storm.StormObject;
+import weather2.weathersystem.storm.WeatherObject;
 import weather2.weathersystem.storm.WeatherObjectParticleStorm;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class SirenBlockEntity extends BlockEntity {
         {
             Vec3 pos = new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
 
-            StormObject so = ClientTickHandler.weatherManager.getClosestStorm(pos, ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
+            WeatherObject so = ClientTickHandler.weatherManager.getClosestStorm(pos, ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
 
             if (so != null)
             {

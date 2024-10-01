@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import weather2.client.SceneEnhancer;
 import weather2.ltcompat.ClientWeatherIntegration;
 import weather2.weathersystem.storm.StormObject;
+import weather2.weathersystem.storm.WeatherObject;
 import weather2.weathersystem.storm.WeatherObjectParticleStorm;
 
 import javax.annotation.Nullable;
@@ -113,7 +114,7 @@ public final class ClientWeatherProxy {
 		if (player.level().getGameTime() % cacheRate == 0) {
 			Vec3 posPlayer = new Vec3(client.player.getX(), 0, client.player.getZ());
 			double maxStormDist = 512 / 4 * 3;
-			StormObject storm = ClientTickHandler.weatherManager.getClosestStorm(posPlayer, maxStormDist, StormObject.STATE_HAIL, StormObject.STATE_HAIL, false);
+			WeatherObject storm = ClientTickHandler.weatherManager.getClosestStorm(posPlayer, maxStormDist, StormObject.STATE_HAIL, StormObject.STATE_HAIL, false);
 			cacheIsHail = storm != null && storm.distanceToEdge(posPlayer) < 0;
 		}
 		return cacheIsHail;

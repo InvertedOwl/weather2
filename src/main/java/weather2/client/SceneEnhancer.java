@@ -50,6 +50,7 @@ import weather2.util.*;
 import weather2.weathersystem.WeatherManagerClient;
 import weather2.weathersystem.fog.FogAdjuster;
 import weather2.weathersystem.storm.StormObject;
+import weather2.weathersystem.storm.WeatherObject;
 import weather2.weathersystem.storm.WeatherObjectParticleStorm;
 import weather2.weathersystem.tornado.TornadoManager;
 import weather2.weathersystem.wind.WindManager;
@@ -550,7 +551,7 @@ public class SceneEnhancer implements Runnable {
 		int safetyCutout = 100;
 
 		if (world.getGameTime() % 20 == 0) {
-			StormObject stormObject = ClientTickHandler.weatherManager.getClosestStorm(entP.position(), ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
+			WeatherObject stormObject = ClientTickHandler.weatherManager.getClosestStorm(entP.position(), ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
 			if (stormObject != null && stormObject.distanceToEdge(entP.position()) < 0) {
 				isPlayerNearTornadoCached = true;
 			} else {

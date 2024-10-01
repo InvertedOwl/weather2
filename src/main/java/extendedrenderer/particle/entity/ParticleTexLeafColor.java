@@ -2,12 +2,12 @@ package extendedrenderer.particle.entity;
 
 import com.corosus.coroutil.util.CoroUtilColor;
 import com.corosus.coroutil.util.CoroUtilMisc;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.concurrent.ConcurrentHashMap;

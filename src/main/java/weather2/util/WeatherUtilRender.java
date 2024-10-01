@@ -12,6 +12,7 @@ import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import weather2.ClientTickHandler;
 import weather2.weathersystem.storm.CloudDefinition;
+import weather2.weathersystem.storm.StormObject;
 import weather2.weathersystem.storm.WeatherObject;
 
 import java.awt.*;
@@ -19,6 +20,10 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 public class WeatherUtilRender {
+    public static int map(double value, double inMin, double inMax, double outMin, double outMax) {
+        return (int) ((value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin);
+    }
+
     public static void renderRadar(PoseStack p_109367_, MultiBufferSource p_109368_, int p_109369_, ItemStack p_109370_, CallbackInfo ci, Matrix4f matrix4f) {
         try {
             List<WeatherObject> weatherObjects = ClientTickHandler.getClientWeather().getStormObjects();
@@ -38,6 +43,11 @@ public class WeatherUtilRender {
 
             for (WeatherObject weatherObject : weatherObjects) {
                 for (CloudDefinition cloud : weatherObject.bounds) {
+                    if (cloud.intensity < 20) {
+                        continue;
+                    }
+
+
                     Rectangle2D rectangle2D = cloud.bounds;
                     double realBlockX1 = rectangle2D.getMinX() + weatherObject.pos.x;
                     double realBlockY1 = rectangle2D.getMinY() + weatherObject.pos.z;
@@ -58,11 +68,37 @@ public class WeatherUtilRender {
 
 
                     // Call renderRectangle to draw the rectangle with clipping
-                    Color color = getRadarColor(cloud.intensity);
+                    Color color = getRadarColor(map(cloud.intensity, 20, 100, 0, 100));
                     renderRectangle(p_109367_, p_109368_, p_109369_, matrix4f, (float)mapX1, (float)mapY1, (float)mapX2, (float)mapY2, z, color.getRed(), color.getGreen(), color.getBlue(), 150);
 
                 }
+                double xCenter = weatherObject.pos.x;
+                double yCenter = weatherObject.pos.z;
+                double realBlockX1 = xCenter - 5;
+                double realBlockY1 = yCenter - 5;
+                double realBlockX2 = xCenter + 5;
+                double realBlockY2 = yCenter + 5;
+
+                // Convert real block coordinates to map coordinates relative to the map center
+                double mapX1 = (realBlockX1 - centerX) / scale + 64.0; // Map is centered at (64,64) on the GUI
+                double mapY1 = (realBlockY1 - centerY) / scale + 64.0;
+                double mapX2 = (realBlockX2 - centerX) / scale + 64.0;
+                double mapY2 = (realBlockY2 - centerY) / scale + 64.0;
+
+                // Offset storms
+                float z = -0.1F - (weatherObjects.indexOf(weatherObject)*0.1f) - 0.1f;
+                Color def = new Color(255, 255, 255, 255);
+
+                if (weatherObject instanceof StormObject) {
+                    if (((StormObject) weatherObject).isGrowing) {
+                        def = new Color(255, 0, 0, 255);
+                    }
+                }
+                renderRectangle(p_109367_, p_109368_, p_109369_, matrix4f, (float)mapX1, (float)mapY1, (float)mapX2, (float)mapY2, z, def.getRed(), def.getGreen(), def.getBlue(), def.getAlpha());
+
             }
+
+
 
 
         } catch (Exception e) {

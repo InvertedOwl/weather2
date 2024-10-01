@@ -402,7 +402,7 @@ public abstract class WeatherManager implements IWorldData {
 
 				WeatherObject wo = null;
 				if (stormData.getInt("weatherObjectType") == EnumWeatherObjectType.CLOUD.ordinal()) {
-					wo = new StormObject(this);
+					wo = new StormObject(this, 15);
 				} else if (stormData.getInt("weatherObjectType") == EnumWeatherObjectType.SAND.ordinal()) {
 					wo = new WeatherObjectParticleStorm(this);
 					((WeatherObjectParticleStorm)wo).setType(WeatherObjectParticleStorm.StormType.SANDSTORM);

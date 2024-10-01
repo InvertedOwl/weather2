@@ -15,6 +15,7 @@ import weather2.block.SensorBlock;
 import weather2.config.ConfigMisc;
 import weather2.weathersystem.WeatherManagerServer;
 import weather2.weathersystem.storm.StormObject;
+import weather2.weathersystem.storm.WeatherObject;
 
 public class SensorBlockEntity extends BlockEntity {
 
@@ -32,7 +33,7 @@ public class SensorBlockEntity extends BlockEntity {
 			WeatherManagerServer wm = ServerTickHandler.getWeatherManagerFor(level);
 			if (wm != null) {
 				Vec3 pos = new Vec3(pos2.getX(), pos2.getY(), pos2.getZ());
-				StormObject so = wm.getClosestStorm(pos, ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
+				WeatherObject so = wm.getClosestStorm(pos, ConfigMisc.sirenActivateDistance, StormObject.STATE_FORMING);
 				if (so != null) {
 					entity.setPoweredState(true);
 				} else {

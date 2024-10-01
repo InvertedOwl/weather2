@@ -1,6 +1,5 @@
 package extendedrenderer;
 
-import weather2.DeferredHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.WaterDropParticle;
 import net.minecraft.core.particles.SimpleParticleType;

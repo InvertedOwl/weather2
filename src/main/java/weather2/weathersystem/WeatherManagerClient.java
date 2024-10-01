@@ -61,7 +61,7 @@ public class WeatherManagerClient extends WeatherManager {
 
 			WeatherObject wo = null;
 			if (weatherObjectType == EnumWeatherObjectType.CLOUD) {
-				wo = new StormObject(ClientTickHandler.weatherManager);
+				wo = new StormObject(ClientTickHandler.weatherManager, 15);
 			} else if (weatherObjectType == EnumWeatherObjectType.SAND) {
 				wo = new WeatherObjectParticleStorm(ClientTickHandler.weatherManager);
 				((WeatherObjectParticleStorm)wo).setType(WeatherObjectParticleStorm.StormType.SANDSTORM);

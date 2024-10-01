@@ -31,9 +31,6 @@ import java.util.List;
  */
 public class WeatherUtilBlock {
 
-	//TODO: 1.14 restore removed methods from previous git commits
-
-
 	public static int layerableHeightPropMax = 8;
 
 	public static void fillAgainstWallSmoothly(Level world, Vec3 posSource, float directionYaw, float scanDistance, float fillRadius, Block blockLayerable, int maxBlockStackingAllowed) {

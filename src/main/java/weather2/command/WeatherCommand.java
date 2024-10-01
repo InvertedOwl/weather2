@@ -329,7 +329,7 @@ public class WeatherCommand {
 
 	private static StormObject summonStorm(CommandContext<CommandSourceStack> c, int intensity) {
 		WeatherManagerServer wm = ServerTickHandler.getWeatherManagerFor(c.getSource().getLevel().dimension());
-		StormObject stormObject = new StormObject(wm);
+		StormObject stormObject = new StormObject(wm, 60);
 		
 		stormObject.setupStorm(c.getSource().getEntity());
 		stormObject.levelCurIntensityStage = intensity;

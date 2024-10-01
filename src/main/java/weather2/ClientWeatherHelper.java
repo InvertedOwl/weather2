@@ -6,10 +6,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import weather2.config.ConfigMisc;
 import weather2.config.ConfigStorm;
+import weather2.weathersystem.storm.CloudDefinition;
 import weather2.weathersystem.storm.StormObject;
 import net.minecraft.network.chat.Component;
+import weather2.weathersystem.storm.WeatherObject;
 
 import java.awt.*;
+import java.util.List;
+
+import static weather2.util.WeatherUtilRender.map;
 
 /**
  * Moving client weather logic to here from scene enhancer.
@@ -64,20 +69,20 @@ public final class ClientWeatherHelper {
 		if (entP == null) return 0;
 		double maxStormDist = 512 / 4 * 3;
 		Vec3 plPos = new Vec3(entP.getX(), StormObject.static_YPos_layer0, entP.getZ());
-		StormObject storm;
+		WeatherObject storm;
 
 		ClientTickHandler.getClientWeather();
 
-		storm = ClientTickHandler.weatherManager.getClosestStorm(plPos, maxStormDist, StormObject.STATE_FORMING, -1, true);
+		storm = ClientTickHandler.weatherManager.getClosestStorm(plPos, maxStormDist, -1, -1, false);
 
 		boolean closeEnough = false;
-		double stormDist = 9999;
+		double stormDist;
 		float tempAdj = 1F;
 
-		float overcastModeMinPrecip = 0.23F;
+		float overcastModeMinPrecip;
 		overcastModeMinPrecip = ClientTickHandler.weatherManager.vanillaRainAmountOnServer;
 
-		//evaluate if storms size is big enough to be over player
+		//evaluate if player is even under storm
 		if (storm != null) {
 
 			stormDist = storm.distanceToEdge(plPos);
@@ -89,17 +94,33 @@ public final class ClientWeatherHelper {
 		if (closeEnough) {
 			//max of 1 if at center of storm, subtract player xz distance out of the size to act like its a weaker storm
 
-			double stormIntensity = 1-Math.exp(-Math.abs(stormDist)/10);
+//			double stormIntensity = 1-Math.exp(-Math.abs(stormDist)/10);
 //			double stormIntensity = (sizeToUse - stormDist) / sizeToUse;
+			List<CloudDefinition> cloudDefinitions = storm.getRectanglesContainingPoint(entP.position().x - storm.pos.x, entP.position().z - storm.pos.z);
+
+			double stormIntensity = 0;
+			for (CloudDefinition cloud : cloudDefinitions) {
+				if (cloud.intensity > stormIntensity) {
+					stormIntensity = cloud.intensity;
+				}
+			}
+
+			if (stormIntensity > 20) {
+//				map(stormIntensity, 20, 100, 0, 100);
+			} else {
+				stormIntensity = 0;
+			}
+
+			stormIntensity /= 100;
 
 			//why is this not a -1 or 1 anymore?!
 
-			tempAdj = 1F;
-
+            // TODO: Set intensity stage based on max intensity
+			// TODO: Also this code specifically here doesn't need to stay
 			//limit plain rain clouds to light intensity
-			if (storm.levelCurIntensityStage == StormObject.STATE_NORMAL) {
-				if (stormIntensity > 0.3) stormIntensity = 0.3;
-			}
+//			if (storm.levelCurIntensityStage == StormObject.STATE_NORMAL) {
+//				if (stormIntensity > 0.3) stormIntensity = 0.3;
+//			}
 
 			if (ConfigStorm.Storm_NoRainVisual) {
 				stormIntensity = 0;

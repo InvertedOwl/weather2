@@ -97,7 +97,7 @@ public class ServerTickHandler {
 					String uuid = tag.getString("uuid");
 					Player player = wm.getWorld().getPlayerByUUID(UUID.fromString(uuid));
 					if (player != null) {
-						StormObject stormObject = new StormObject(wm);
+						StormObject stormObject = new StormObject(wm, 100);
 
 						stormObject.setupStorm(player);
 						stormObject.levelCurIntensityStage = StormObject.STATE_STAGE1;
@@ -114,7 +114,7 @@ public class ServerTickHandler {
 						CULog.err("error cant find player in dimension " + dimResource + " for uuid " + uuid + " via IMC");
 					}
 				} else if (msg.method().equals("sharknado")) {
-					StormObject stormObject = new StormObject(wm);
+					StormObject stormObject = new StormObject(wm, 100);
 
 					stormObject.setupStorm(null);
 					stormObject.levelCurIntensityStage = StormObject.STATE_STAGE1;
@@ -127,7 +127,7 @@ public class ServerTickHandler {
 
 					CULog.dbg("processed imc message: " + tag);
 				} else if (msg.method().equals("firenado")) {
-					StormObject stormObject = new StormObject(wm);
+					StormObject stormObject = new StormObject(wm, 100);
 
 					stormObject.setupStorm(null);
 					stormObject.levelCurIntensityStage = StormObject.STATE_STAGE1;
@@ -140,7 +140,7 @@ public class ServerTickHandler {
 
 					CULog.dbg("processed imc message: " + tag);
 				} else if (msg.method().equals("tornado")) {
-					StormObject stormObject = new StormObject(wm);
+					StormObject stormObject = new StormObject(wm, 100);
 
 					stormObject.setupStorm(null);
 					stormObject.levelCurIntensityStage = StormObject.STATE_STAGE1;

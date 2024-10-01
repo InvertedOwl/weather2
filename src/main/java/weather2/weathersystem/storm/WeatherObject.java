@@ -42,39 +42,76 @@ public class WeatherObject {
 
 	private CachedNBTTagCompound nbtCache;
 
-	public WeatherObject(WeatherManager parManager) {
+	public WeatherObject(WeatherManager parManager, int maxIntensity) {
 		manager = parManager;
 		nbtCache = new CachedNBTTagCompound();
 
-		int maxIntensity = 40;
-
-		int currentIntensity = 10;
-		while (currentIntensity < maxIntensity) {
-			// Decreasing size for each consecutive intensity level
-			int size = (maxIntensity/(random.nextInt(currentIntensity) + 1)) * 10;
-
-			// Offset by a small x and y, not usually enough to leave the last cloud, but I suppose its possible
-			int x = -size/2 + (random.nextInt(size/2)-size/4);
-			int y = -size/2 + (random.nextInt(size/2)-size/4);
-
-			// even smaller offset it width and height. this is just to add a tiny bit of realism but it's not super necessaery
-			int width = size + (random.nextInt(size/6)-size/12);
-			int height = size + (random.nextInt(size/6)-size/12);
-
-			bounds.add(new CloudDefinition(new Rectangle2D.Double(x, y, width, height), currentIntensity * 2));
-
-			// Update current intensity but a small but non-zero random integer.
-			currentIntensity += random.nextInt(5) + 5;
-		}
+		generateBounds(maxIntensity, 10);
 
 	}
-	
+
+	public void generateBounds(int maxIntensity, int currentIntensity) {
+		// Initialize x, y, width, and height
+		double x = 50;
+		double y = 50;
+
+		while (currentIntensity < maxIntensity) {
+			// Update randomFactor and intensityFactor
+			double randomFactor = (maxIntensity - currentIntensity) / (double) maxIntensity;
+			double intensityFactor = currentIntensity / (double) maxIntensity;
+
+			// Width and height decrease more as intensity increases
+			double width = 100 * randomFactor * (random.nextDouble(4) + 1);
+			double height = 100 * randomFactor * (random.nextDouble(4) + 1);
+
+			width -= intensityFactor * 10 + random.nextDouble() * intensityFactor * 5;
+			height -= intensityFactor * 5 + random.nextDouble() * intensityFactor * 2.5;
+
+			// Ensure width and height don't shrink too much
+			width = Math.max(10, width);
+			height = Math.max(5, height);
+
+			// Add some randomness to x and y offsets
+			double xOffset = (random.nextDouble() - 0.5) * randomFactor * width;  // Shift relative to width
+			double yOffset = (random.nextDouble() - 0.5) * randomFactor * height; // Shift relative to height
+
+			// Update x and y to keep the new rectangle centered
+			x += xOffset;
+			y += yOffset;
+
+			// Center the new rectangle around the (x, y) point
+			bounds.add(new CloudDefinition(
+					new Rectangle2D.Double(x - width / 2, y - height / 2, width, height),
+					currentIntensity));
+
+			// Update the current intensity with a small but non-zero random increment
+			currentIntensity += random.nextInt(5) + 5;
+		}
+	}
+
+
+
+
 	public void initFirstTime() {
 		ID = lastUsedStormID++;
 	}
 	
 	public void tick() {
 		
+	}
+
+	public List<CloudDefinition> getRectanglesContainingPoint(double x, double y) {
+		List<CloudDefinition> containingRectangles = new ArrayList<>();
+
+		// Iterate over all rectangles and check if the point is inside
+		for (CloudDefinition cloudDefinition : bounds) {
+			Rectangle2D rect = cloudDefinition.bounds;
+			if (rect.contains(x, y)) {
+				containingRectangles.add(cloudDefinition);
+			}
+		}
+
+		return containingRectangles;
 	}
 
 	public Point2D generateRandomPointInRectangles() {

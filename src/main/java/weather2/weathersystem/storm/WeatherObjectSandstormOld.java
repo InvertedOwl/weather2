@@ -26,7 +26,7 @@ public class WeatherObjectSandstormOld extends WeatherObject {
 	public Random rand = new Random();
 	
 	public WeatherObjectSandstormOld(WeatherManager parManager) {
-		super(parManager);
+		super(parManager, 0);
 		
 		this.weatherObjectType = EnumWeatherObjectType.SAND;
 	}

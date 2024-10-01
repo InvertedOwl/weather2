@@ -441,7 +441,7 @@ public class WeatherManagerServer extends WeatherManager {
 		int spawnX = -1;
 		int spawnZ = -1;
 		Vec3 tryPos = null;
-		StormObject soClose = null;
+		WeatherObject soClose = null;
 		Player playerClose = null;
 
 		int closestToPlayer = 128;
@@ -462,7 +462,7 @@ public class WeatherManagerServer extends WeatherManager {
 
 		if (soClose == null) {
 
-			StormObject so = new StormObject(this);
+			StormObject so = new StormObject(this, 30);
 			so.pos = tryPos;
 			so.layer = layer;
 			so.initFirstTime();

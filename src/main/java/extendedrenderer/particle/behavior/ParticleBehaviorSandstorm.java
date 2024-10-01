@@ -2,16 +2,9 @@ package extendedrenderer.particle.behavior;
 
 import com.corosus.coroutil.util.CoroUtilBlock;
 import extendedrenderer.particle.entity.EntityRotFX;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import weather2.ClientTickHandler;
-import weather2.ClientWeatherProxy;
-import weather2.datatypes.PrecipitationType;
 
 public class ParticleBehaviorSandstorm extends ParticleBehaviors {
 

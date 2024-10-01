@@ -50,7 +50,7 @@ public class WeatherObjectParticleStorm extends WeatherObject {
 	}
 
 	public WeatherObjectParticleStorm(WeatherManager parManager) {
-		super(parManager);
+		super(parManager, 0);
 		
 		this.weatherObjectType = EnumWeatherObjectType.SAND;
 	}

@@ -6,24 +6,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import extendedrenderer.particle.behavior.ParticleBehaviors;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.codehaus.plexus.util.dag.Vertex;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import weather2.ClientTickHandler;
@@ -33,7 +34,6 @@ import weather2.weathersystem.WeatherManagerClient;
 import weather2.weathersystem.wind.WindManager;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 public class EntityRotFX extends TextureSheetParticle implements IWindHandler
@@ -44,12 +44,12 @@ public class EntityRotFX extends TextureSheetParticle implements IWindHandler
         public void begin(BufferBuilder p_217600_1_, TextureManager p_217600_2_) {
             RenderSystem.disableCull();
             ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT.begin(p_217600_1_, p_217600_2_);
+            RenderSystem.depthMask(false);
         }
 
         @Override
         public void end(Tesselator p_217599_1_) {
-            //TODO: not possible in 1.20 now i guess, cant remember why this line was important
-            //p_217599_1_.getBuilder().setQuadSortOrigin(0, 0, 0);
+            p_217599_1_.getBuilder().setQuadSorting(VertexSorting.DISTANCE_TO_ORIGIN);
             ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT.end(p_217599_1_);
         }
 
@@ -71,8 +71,7 @@ public class EntityRotFX extends TextureSheetParticle implements IWindHandler
 
         @Override
         public void end(Tesselator p_217599_1_) {
-            //TODO: not possible in 1.20 now i guess, cant remember why this line was important
-            //p_217599_1_.getBuilder().setQuadSortOrigin(0, 0, 0);
+            p_217599_1_.getBuilder().setQuadSorting(VertexSorting.DISTANCE_TO_ORIGIN);
             ParticleRenderType.PARTICLE_SHEET_OPAQUE.end(p_217599_1_);
         }
 
@@ -321,14 +320,14 @@ public class EntityRotFX extends TextureSheetParticle implements IWindHandler
                 //int height = this.world.getPrecipitationHeight(new BlockPos(this.posX, this.posY, this.posZ)).getY();
                 int height = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY();
                 if (this.y - killWhenUnderTopmostBlock_ScanAheadRange <= height) {
-                    startDeath();
+//                    startDeath();
                 }
             }
 
             //case: when on high pillar and rain is falling far below you, start killing it / fading it out
             if (killWhenUnderCameraAtLeast != 0) {
                 if (this.y < ent.getY() - killWhenUnderCameraAtLeast) {
-                    startDeath();
+//                    startDeath();
                 }
             }
 
@@ -337,7 +336,7 @@ public class EntityRotFX extends TextureSheetParticle implements IWindHandler
 
                     if (ent.distanceToSqr(this.x, this.y, this.z) > killWhenFarFromCameraAtLeast * killWhenFarFromCameraAtLeast) {
                         //System.out.println("far kill");
-                        startDeath();
+//                        startDeath();
                     }
                 }
             }
@@ -822,7 +821,7 @@ public class EntityRotFX extends TextureSheetParticle implements IWindHandler
 
     @Override
     public int getLightColor(float p_189214_1_) {
-        return super.getLightColor(p_189214_1_);//(int)((float)super.getBrightnessForRender(p_189214_1_))/* * this.world.getSunBrightness(1F))*/;
+        return super.getLightColor(1000);//(int)((float)super.getBrightnessForRender(p_189214_1_))/* * this.world.getSunBrightness(1F))*/;
     }
 
     /*public void updateQuaternion(Entity camera) {
@@ -850,15 +849,11 @@ public class EntityRotFX extends TextureSheetParticle implements IWindHandler
     @Override
     public void setColor(float particleRedIn, float particleGreenIn, float particleBlueIn) {
         super.setColor(particleRedIn, particleGreenIn, particleBlueIn);
-        //TODO: 1.14 uncomment
-        /*RotatingParticleManager.markDirtyVBO2();*/
     }
 
     @Override
     public void setAlpha(float alpha) {
         super.setAlpha(alpha);
-        //TODO: 1.14 uncomment
-        /*RotatingParticleManager.markDirtyVBO2();*/
     }
 
     public int getKillWhenUnderTopmostBlock_ScanAheadRange() {

@@ -107,6 +107,7 @@ public class StormObject extends WeatherObject {
 	//growth / progression info
 	
 	public boolean isGrowing = true;
+	public static Random random = new Random();
 	
 	//cloud formation data, helps storms
 	public int levelWater = 0; //builds over water and humid biomes, causes rainfall (not technically a storm)
@@ -120,8 +121,8 @@ public class StormObject extends WeatherObject {
 	public int levelStormIntensityMax = 0; //calculated from colliding warm and cold fronts, used to determine how crazy a storm _will_ get
 	
 	//revision, ints for each stage of intensity, and a float for the intensity of THAT current stage
-	public int levelCurIntensityStage = 0; //since we want storms to build up to a climax still, this will start from 0 and peak to levelStormIntensityMax
-	public float levelCurStagesIntensity = 0;
+	public int levelCurIntensityStage = STATE_NORMAL; //since we want storms to build up to a climax still, this will start from 0 and peak to levelStormIntensityMax
+	public float levelCurStagesIntensity = STATE_NORMAL;
 	//public boolean isRealStorm = false;
 	public boolean hasStormPeaked = false;
 	
@@ -158,6 +159,7 @@ public class StormObject extends WeatherObject {
 	
 	
 	//used for sure, rain is dependant on water level values
+	// TODO: Set precip boolean to check if intensity above 30 exists
 	public boolean attrib_precipitation = false;
 	public boolean attrib_waterSpout = false;
 	
@@ -229,8 +231,8 @@ public class StormObject extends WeatherObject {
 
 	private boolean debugCloudTemperature = false;
     
-	public StormObject(WeatherManager parManager) {
-		super(parManager);
+	public StormObject(WeatherManager parManager, int maxIntensity) {
+		super(parManager, maxIntensity);
 		
 		pos = new Vec3(0, static_YPos_layer0, 0);
 
@@ -1121,11 +1123,13 @@ public class StormObject extends WeatherObject {
 		//storm progression, heavy WIP
 		if (world.getGameTime() % 3 == 0) {
 			if (isGrowing) {
-//				if (size < maxSize) {
-//					size++;
-//				} else {
-//					isGrowing = false;
-//				}
+				for (CloudDefinition cloud : bounds) {
+					cloud.bounds.setRect(cloud.bounds.getX()-0.1, cloud.bounds.getY()-0.1, cloud.bounds.getWidth() + 0.2, cloud.bounds.getHeight() + 0.2);
+				}
+
+				if (random.nextDouble() > 0.95) {
+					isGrowing = false;
+				}
 			} else {
 				/*if (size > 0) {
 					size--;
@@ -1838,18 +1842,6 @@ public class StormObject extends WeatherObject {
 
 		if (!pet && !baby && this.manager.getWorld().getGameTime() % (delay + (isSpinning() ? ConfigStorm.Storm_ParticleSpawnDelay : ConfigMisc.Cloud_ParticleSpawnDelay)) == 0) {
 			for (int i = 0; i < loopSize; i++) {
-				/*if (listParticlesCloud.size() == 0) {
-					double spawnRad = 1;
-					Vec3 tryPos = new Vec3(pos.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), layers.get(layer), pos.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-					EntityRotFX particle;
-					if (WeatherUtil.isAprilFoolsDay()) {
-						particle = spawnFogParticle(tryPos.x, tryPos.y, tryPos.z, 0, ParticleRegistry.chicken);
-					} else {
-						particle = spawnFogParticle(tryPos.x, tryPos.y, tryPos.z, 0, ParticleRegistry.cloud256_test);
-					}
-
-					listParticlesCloud.add(particle);
-				}*/
 				double totalArea = 0;
 				for (CloudDefinition cloud : bounds) {
 					Rectangle2D rect = cloud.bounds;
@@ -1859,49 +1851,27 @@ public class StormObject extends WeatherObject {
 				double densityFactor = 1.0; // You can increase/decrease this value to control cloud density
 
 				if (listParticlesCloud.size() < (totalArea / extraSpawning) * densityFactor) {
-//					double spawnRad = size;
-					
-					/*if (layer != 0) {
-						spawnRad = size * 5;
-					}*/
-					
-					//Weather.dbg("listParticlesCloud.size(): " + listParticlesCloud.size());
-					
-					//Vec3 tryPos = new Vec3(pos.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), layers.get(layer), pos.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 					Point2D point2D = generateRandomPointInRectangles();
 					int x = (int) Math.floor(pos.x + point2D.getX());
 					int z = (int) Math.floor(pos.z + point2D.getY());
 
-					Vec3 tryPos = new Vec3(x, getPosTop().y + 30, z);
-					if (tryPos.distanceTo(playerAdjPos) < maxSpawnDistFromPlayer) {
-						if (getAvoidAngleIfTerrainAtOrAheadOfPosition(getAdjustedAngle(), tryPos) == 0) {
-							EntityRotFX particle;
-							if (WeatherUtil.isAprilFoolsDay() && !Weather.isLoveTropicsInstalled()) {
-								particle = spawnFogParticle(tryPos.x, tryPos.y, tryPos.z, 0, ParticleRegistry.chicken);
-							} else {
+					for (int j = getRectanglesContainingPoint(point2D.getX(), point2D.getY()).size(); j > -1; j --) {
+						Vec3 tryPos = new Vec3(x, getPosTop().y + 30 + j *30, z);
+						if (tryPos.distanceTo(playerAdjPos) < maxSpawnDistFromPlayer) {
+							if (getAvoidAngleIfTerrainAtOrAheadOfPosition(getAdjustedAngle(), tryPos) == 0) {
+								EntityRotFX particle;
 
-								particle = spawnFogParticle(tryPos.x, tryPos.y, tryPos.z, 0);
+								particle = spawnFogParticle(tryPos.x, tryPos.y, tryPos.z, 2);
 								if (isFirenado && isSpinning()) {
-									//if (particle.getEntityId() % 20 < 5) {
-										particle.setSprite(ParticleRegistry.cloud256_fire);
-										particle.setColor(1F, 1F, 1F);
-
-									//}
+									particle.setSprite(ParticleRegistry.cloud256_fire);
+									particle.setColor(1F, 1F, 1F);
 								}
+
+								listParticlesCloud.add(particle);
 							}
-
-							/*if (layer == 0) {
-								particle.particleScale = 500;
-							} else {
-								particle.particleScale = 2000;
-							}*/
-
-							listParticlesCloud.add(particle);
 						}
 					}
 				}
-				
-				
 			}
 		}
 		
@@ -2059,7 +2029,7 @@ public class StormObject extends WeatherObject {
 
 					//fade spout blue to grey
 					if (levelCurIntensityStage == STATE_HIGHWIND) {
-						int fadingDistStart = 30;
+						int fadingDistStart = 300000;
 						if (ent.getPosY() > posGround.y + fadingDistStart) {
 							float maxVal = ent.bCol;
 							float fadeRate = 0.002F;
@@ -2862,65 +2832,52 @@ public class StormObject extends WeatherObject {
 		Random rand = new Random();
     	EntityRotFX entityfx = particleBehaviorFog.spawnNewParticleIconFX(Minecraft.getInstance().level, tex, x, y, z, (rand.nextDouble() - rand.nextDouble()) * speed, 0.0D/*(rand.nextDouble() - rand.nextDouble()) * speed*/, (rand.nextDouble() - rand.nextDouble()) * speed, parRenderOrder);
 		particleBehaviorFog.initParticle(entityfx);
-		
-		//potato
-		//entityfx.setColor(1f, 1f, 1f);
-		
-		//lock y
-		//entityfx.spawnY = (float) entityfx.posY;
-		//entityfx.spawnY = ((int)200 - 5) + rand.nextFloat() * 5;
+
 		entityfx.setCanCollide(false);
     	entityfx.callUpdatePB = false;
 
 		debugCloudTemperature = false;
     	boolean debug = debugCloudTemperature;
-    	
+
     	if (debug) {
     		//entityfx.setMaxAge(50 + rand.nextInt(10));
     	} else {
-	    	
+
     	}
-    	
+
     	if (levelCurIntensityStage == STATE_NORMAL) {
     		entityfx.setMaxAge(300 + rand.nextInt(100));
-    	} else {
-//    		entityfx.setMaxAge((size/2) + rand.nextInt(100));
     	}
     	
 		//pieces that move down with funnel need render order shift, also only for relevant storm formations
-		if (entityfx.getEntityId() % 20 < 5 && isSpinning()) {
-			entityfx.renderOrder = 1;
-			
-//			entityfx.setMaxAge((size) + rand.nextInt(100));
+    	float randFloat = (rand.nextFloat() * 0.5F);
+//		float baseBright = 0.7F;
+//		if (levelCurIntensityStage > STATE_NORMAL) {
+//			baseBright = 0.2F;
+//		} else if (attrib_precipitation) {
+//			baseBright = 0.2F;
+//		} else if (manager.isVanillaRainActiveOnServer) {
+//			baseBright = 0.2F;
+//		} else {
+//			float adj = Math.min(1F, levelWater / levelWaterStartRaining) * 0.6F;
+//			baseBright -= adj;
+//		}
+
+		double maxIntensity = 0;
+		List<CloudDefinition> definitions = getRectanglesContainingPoint(x - pos.x, z - pos.z);
+		for (CloudDefinition cloud : definitions) {
+			if (cloud.intensity > maxIntensity) {
+				maxIntensity = cloud.intensity;
+			}
 		}
-    	
-    	float randFloat = (rand.nextFloat() * 0.6F);
-		float baseBright = 0.7F;
-		if (levelCurIntensityStage > STATE_NORMAL) {
-			baseBright = 0.2F;
-		} else if (attrib_precipitation) {
-			baseBright = 0.2F;
-		} else if (manager.isVanillaRainActiveOnServer) {
-			baseBright = 0.2F;
-		} else {
-			float adj = Math.min(1F, levelWater / levelWaterStartRaining) * 0.6F;
-			baseBright -= adj;
-		}
-		
-		/*if (layer == 1) {
-			baseBright = 0.1F;
-		}*/
-		
+		maxIntensity /= 100;
+
+		float baseBright = (float) ((1f/Math.exp(4*maxIntensity) + 0.1f)*0.9f);
+
 		float finalBright = Math.min(1F, baseBright+randFloat);
 
-		/*if (isFirenado) {
-			finalBright = 1F;
-		}*/
-
 		entityfx.setColor(finalBright, finalBright, finalBright);
-		
-		//entityfx.setColor(1, 1, 1);
-		
+
 		//DEBUG
 		if (debug) {
 			if (levelTemperature < 0) {
@@ -2938,7 +2895,7 @@ public class StormObject extends WeatherObject {
 
 		if (ConfigParticle.Particle_effect_rate != 0) {
 			entityfx.spawnAsWeatherEffect();
-			//Minecraft.getInstance().particleEngine.add(entityfx);
+			Minecraft.getInstance().particleEngine.add(entityfx);
 			particleBehaviorFog.particles.add(entityfx);
 		}
 		return entityfx;

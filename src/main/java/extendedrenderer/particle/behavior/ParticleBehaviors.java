@@ -1,9 +1,5 @@
 package extendedrenderer.particle.behavior;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.corosus.coroutil.util.CoroUtilBlock;
 import com.corosus.coroutil.util.CoroUtilMisc;
 import extendedrenderer.particle.entity.EntityRotFX;
@@ -26,6 +22,10 @@ import weather2.ClientWeatherProxy;
 import weather2.client.SceneEnhancer;
 import weather2.datatypes.PrecipitationType;
 import weather2.util.WeatherUtilParticle;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public class ParticleBehaviors {
@@ -163,9 +163,9 @@ public class ParticleBehaviors {
 	
 	public void tickUpdateCloud(EntityRotFX particle) {
 		particle.rotationYaw -= 0.1;
-		
+
 		int ticksFadeInMax = 100;
-		
+
 		if (particle.getAge() < ticksFadeInMax) {
 			//System.out.println("particle.getAge(): " + particle.getAge());
 			particle.setAlpha(particle.getAge() * 0.01F);

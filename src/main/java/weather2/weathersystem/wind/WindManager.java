@@ -22,6 +22,7 @@ import weather2.util.WeatherUtilEntity;
 import weather2.weathersystem.WeatherManager;
 import weather2.weathersystem.WeatherManagerServer;
 import weather2.weathersystem.storm.StormObject;
+import weather2.weathersystem.storm.WeatherObject;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -402,7 +403,7 @@ public class WindManager {
 
 			if (manager.getWorld().getGameTime() % 20 == 0) {
 				float maxDist = 512;
-				StormObject so = manager.getClosestStorm(new Vec3(entP.getX(), StormObject.layers.get(0), entP.getZ()), maxDist, StormObject.STATE_HIGHWIND);
+				WeatherObject so = manager.getClosestStorm(new Vec3(entP.getX(), StormObject.layers.get(0), entP.getZ()), maxDist, StormObject.STATE_HIGHWIND);
 
 				if (so != null) {
 
@@ -463,7 +464,7 @@ public class WindManager {
 	public float calculateWindSpeedEventForPos(BlockPos pos) {
 		float maxDist = 512;
 		Vec3 posVec = new Vec3(pos.getX(), pos.getY(), pos.getZ());
-		StormObject so = manager.getClosestStorm(posVec, maxDist, StormObject.STATE_HIGHWIND);
+		WeatherObject so = manager.getClosestStorm(posVec, maxDist, StormObject.STATE_HIGHWIND);
 		if (so != null) {
 			double dist = posVec.distanceTo(so.posGround);
 			return getEventSpeedFactor(dist, maxDist);
